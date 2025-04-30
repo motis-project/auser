@@ -1,0 +1,8 @@
+[boost]
+  url=git@github.com:motis-project/boost.git
+  branch=boost-1.86.0
+  commit=4a9aca6cb8af75be6e58f28c09cc7e39f61e6173
+[net]
+  url=git@github.com:motis-project/net.git
+  branch=master
+  commit=db7450708b7a2c37572d5c0f6a42a53b8f644e57

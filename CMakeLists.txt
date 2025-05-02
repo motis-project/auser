@@ -70,6 +70,7 @@ target_compile_options(vdvauserlib PRIVATE ${compile-options})
 target_link_libraries(vdvauserlib
         Boost::fiber
         web-server
+        ssl
         fmt
         pugixml
 )

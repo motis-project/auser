@@ -11,7 +11,7 @@ namespace auser {
 struct client_status {
   std::string operator()(std::string_view) const;
 
-  connection const& vdvaus_;
+  connection const& conn_;
 };
 
 }  // namespace auser

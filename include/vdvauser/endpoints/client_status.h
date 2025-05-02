@@ -4,9 +4,9 @@
 
 #include "boost/url/url_view.hpp"
 
-#include "motis/fwd.h"
+#include "vdvauser/connection.h"
 
-namespace motis::vdvaus {
+namespace vdvauser {
 
 struct client_status {
   std::string operator()(std::string_view) const;
@@ -14,4 +14,4 @@ struct client_status {
   connection const& vdvaus_;
 };
 
-}  // namespace motis::vdvaus
+}  // namespace vdvauser

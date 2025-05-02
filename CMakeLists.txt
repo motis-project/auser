@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(vdvaus-proxy LANGUAGES CXX)
+project(vdvauser LANGUAGES CXX)
 
 include(cmake/buildcache.cmake)
 include(cmake/pkg.cmake)
@@ -70,9 +70,11 @@ target_compile_options(vdvauslib PRIVATE ${compile-options})
 target_link_libraries(vdvauslib
         Boost::fiber
         web-server
+        fmt
+        pugixml
 )
 
 # --- EXE ---
-add_executable(vdvausproxy exe/vdvausproxy.cc)
-target_compile_features(vdvausproxy PUBLIC cxx_std_23)
-target_link_libraries(vdvausproxy boost-program_options vdvauslib)
+add_executable(vdvauser exe/vdvauser.cc)
+target_compile_features(vdvauser PUBLIC cxx_std_23)
+target_link_libraries(vdvauser boost-program_options vdvauslib)

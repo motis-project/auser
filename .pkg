@@ -6,3 +6,15 @@
   url=git@github.com:motis-project/net.git
   branch=master
   commit=db7450708b7a2c37572d5c0f6a42a53b8f644e57
+[fmt]
+  url=git@github.com:motis-project/fmt.git
+  branch=master
+  commit=dc10f83be70ac2873d5f8d1ce317596f1fd318a2
+[pugixml]
+  url=git@github.com:motis-project/pugixml.git
+  branch=master
+  commit=60175e80e2f5e97e027ac78f7e14c5acc009ce50
+[utl]
+  url=git@github.com:motis-project/utl.git
+  branch=master
+  commit=afa4b1787c83f24fe7e11fa84902d3d51727e08b

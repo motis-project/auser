@@ -1,4 +1,4 @@
-#include "vdvausproxy/scheduler/scheduler_algo.h"
+#include "vdvauser/scheduler/scheduler_algo.h"
 
 #include "boost/context/detail/prefetch.hpp"
 #include "boost/fiber/context.hpp"
@@ -9,7 +9,7 @@
 
 namespace bf = boost::fibers;
 
-namespace vdvausproxy {
+namespace vdvauser {
 
 fiber_props::fiber_props(bf::context* ctx) : fiber_properties{ctx} {}
 fiber_props::~fiber_props() = default;
@@ -110,4 +110,4 @@ void work_stealing::notify() noexcept {
   }
 }
 
-}  // namespace vdvausproxy
+}  // namespace vdvauser

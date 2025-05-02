@@ -1,9 +1,9 @@
-#include "motis/vdvaus/client_status.h"
+#include "vdvauser/endpoints/client_status.h"
 
-#include "motis/vdvaus/connection.h"
-#include "motis/vdvaus/xml.h"
+#include "vdvauser/connection.h"
+#include "vdvauser/xml.h"
 
-namespace motis::vdvaus {
+namespace vdvauser {
 
 std::string client_status::operator()(std::string_view) const {
   auto doc = make_xml_doc();
@@ -20,4 +20,4 @@ std::string client_status::operator()(std::string_view) const {
   return xml_to_str(doc);
 }
 
-}  // namespace motis::vdvaus
+}  // namespace vdvauser

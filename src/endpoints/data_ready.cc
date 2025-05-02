@@ -1,8 +1,8 @@
-#include "motis/vdvaus/data_ready.h"
+#include "vdvauser/endpoints/data_ready.h"
 
-#include "motis/vdvaus/xml.h"
+#include "vdvauser/xml.h"
 
-namespace motis::vdvaus {
+namespace vdvauser {
 std::string data_ready::operator()(std::string_view) const {
   auto doc = make_xml_doc();
   auto data_ready_node = doc.append_child("DatenBereitAntwort");
@@ -15,4 +15,4 @@ std::string data_ready::operator()(std::string_view) const {
   return xml_to_str(doc);
 }
 
-}  // namespace motis::vdvaus
+}  // namespace vdvauser

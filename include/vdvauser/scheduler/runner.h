@@ -11,7 +11,7 @@
 
 #include "scheduler_algo.h"
 
-namespace vdvausproxy {
+namespace vdvauser {
 
 struct runner {
   runner(std::size_t const n_threads, std::size_t const buffer_size)
@@ -31,4 +31,4 @@ struct runner {
   net::fiber_exec::channel_t ch_;
 };
 
-}  // namespace vdvausproxy
+}  // namespace vdvauser

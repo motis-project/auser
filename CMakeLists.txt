@@ -63,11 +63,11 @@ endif ()
 
 # --- LIB ---
 file(GLOB_RECURSE libfiles src/*.cc)
-add_library(vdvauslib ${libfiles})
-target_include_directories(vdvauslib PUBLIC include)
-target_compile_features(vdvauslib PUBLIC cxx_std_23)
-target_compile_options(vdvauslib PRIVATE ${compile-options})
-target_link_libraries(vdvauslib
+add_library(vdvauserlib ${libfiles})
+target_include_directories(vdvauserlib PUBLIC include)
+target_compile_features(vdvauserlib PUBLIC cxx_std_23)
+target_compile_options(vdvauserlib PRIVATE ${compile-options})
+target_link_libraries(vdvauserlib
         Boost::fiber
         web-server
         fmt
@@ -77,4 +77,4 @@ target_link_libraries(vdvauslib
 # --- EXE ---
 add_executable(vdvauser exe/vdvauser.cc)
 target_compile_features(vdvauser PUBLIC cxx_std_23)
-target_link_libraries(vdvauser boost-program_options vdvauslib)
+target_link_libraries(vdvauser boost-program_options vdvauserlib)

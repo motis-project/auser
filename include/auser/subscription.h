@@ -8,8 +8,12 @@
 
 namespace auser {
 
-void subscription(boost::asio::io_context&, config const&, connection&);
+void subscription(boost::asio::io_context&,
+                  config const&,
+                  std::vector<connection>&);
 
-void shutdown(boost::asio::io_context&, config const&, connection&);
+void shutdown(boost::asio::io_context&,
+              config const&,
+              std::vector<connection>&);
 
 }  // namespace auser

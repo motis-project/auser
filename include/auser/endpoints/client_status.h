@@ -4,9 +4,9 @@
 
 #include "boost/url/url_view.hpp"
 
-#include "vdvauser/connection.h"
+#include "auser/connection.h"
 
-namespace vdvauser {
+namespace auser {
 
 struct client_status {
   std::string operator()(std::string_view) const;
@@ -14,4 +14,4 @@ struct client_status {
   connection const& vdvaus_;
 };
 
-}  // namespace vdvauser
+}  // namespace auser

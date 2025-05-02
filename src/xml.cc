@@ -1,8 +1,8 @@
-#include "vdvauser/xml.h"
+#include "auser/xml.h"
 
-#include "vdvauser/time.h"
+#include "auser/time.h"
 
-namespace vdvauser {
+namespace auser {
 
     pugi::xml_document make_xml_doc() {
         auto doc = pugi::xml_document{};
@@ -24,4 +24,4 @@ namespace vdvauser {
         return doc;
     }
 
-}  // namespace vdvauser
+}  // namespace auser

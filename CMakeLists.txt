@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(vdvauser LANGUAGES CXX)
+project(auser LANGUAGES CXX)
 
 include(cmake/buildcache.cmake)
 include(cmake/pkg.cmake)
@@ -63,11 +63,11 @@ endif ()
 
 # --- LIB ---
 file(GLOB_RECURSE libfiles src/*.cc)
-add_library(vdvauserlib ${libfiles})
-target_include_directories(vdvauserlib PUBLIC include)
-target_compile_features(vdvauserlib PUBLIC cxx_std_23)
-target_compile_options(vdvauserlib PRIVATE ${compile-options})
-target_link_libraries(vdvauserlib
+add_library(auserlib ${libfiles})
+target_include_directories(auserlib PUBLIC include)
+target_compile_features(auserlib PUBLIC cxx_std_23)
+target_compile_options(auserlib PRIVATE ${compile-options})
+target_link_libraries(auserlib
         Boost::fiber
         web-server
         ssl
@@ -76,6 +76,6 @@ target_link_libraries(vdvauserlib
 )
 
 # --- EXE ---
-add_executable(vdvauser exe/vdvauser.cc)
-target_compile_features(vdvauser PUBLIC cxx_std_23)
-target_link_libraries(vdvauser boost-program_options vdvauserlib)
+add_executable(auser exe/auser.cc)
+target_compile_features(auser PUBLIC cxx_std_23)
+target_link_libraries(auser boost-program_options auserlib)

@@ -1,12 +1,12 @@
-#include "vdvauser/connection.h"
+#include "auser/connection.h"
 
 #include "fmt/format.h"
 
-#include "vdvauser/xml.h"
+#include "auser/xml.h"
 
-namespace vdvauser {
+namespace auser {
 
-    connection::connection(vdvauser::config const &cfg)
+    connection::connection(auser::config const &cfg)
             : cfg_{cfg},
               client_status_path_{
                       fmt::format("/{}/aus/clientstatus.xml", cfg.server_name_)},
@@ -39,4 +39,4 @@ namespace vdvauser {
         return xml_to_str(doc);
     }
 
-} // namespace vdvauser
+} // namespace auser

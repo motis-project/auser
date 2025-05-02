@@ -2,9 +2,9 @@
 
 #include "pugixml.hpp"
 
-#include "vdvauser/time.h"
+#include "auser/time.h"
 
-namespace vdvauser {
+namespace auser {
 
     pugi::xml_document make_xml_doc();
 
@@ -12,4 +12,4 @@ namespace vdvauser {
 
     pugi::xml_document parse(std::string const &);
 
-}  // namespace vdvauser
+}  // namespace auser

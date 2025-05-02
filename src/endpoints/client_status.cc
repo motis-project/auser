@@ -1,11 +1,11 @@
-#include "vdvauser/endpoints/client_status.h"
+#include "auser/endpoints/client_status.h"
 
 #include "fmt/printf.h"
 
-#include "vdvauser/connection.h"
-#include "vdvauser/xml.h"
+#include "auser/connection.h"
+#include "auser/xml.h"
 
-namespace vdvauser {
+namespace auser {
 
     std::string client_status::operator()(std::string_view s) const {
         fmt::println("received client_status_request: {}", s);
@@ -24,4 +24,4 @@ namespace vdvauser {
         return xml_to_str(doc);
     }
 
-}  // namespace vdvauser
+}  // namespace auser

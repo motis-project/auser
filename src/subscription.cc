@@ -1,4 +1,4 @@
-#include "vdvauser/subscription.h"
+#include "auser/subscription.h"
 
 #include "boost/asio/co_spawn.hpp"
 #include "boost/asio/detached.hpp"
@@ -8,12 +8,12 @@
 
 #include "fmt/printf.h"
 
-#include "vdvauser/config.h"
-#include "vdvauser/connection.h"
-#include "vdvauser/xml.h"
-#include "vdvauser/http.h"
+#include "auser/config.h"
+#include "auser/connection.h"
+#include "auser/xml.h"
+#include "auser/http.h"
 
-namespace vdvauser {
+namespace auser {
 
     pugi::xml_node add_sub_req_node(pugi::xml_node &node,
                                     std::string const &sender) {
@@ -138,4 +138,4 @@ namespace vdvauser {
                 boost::asio::detached);
     }
 
-}  // namespace vdvauser
+}  // namespace auser

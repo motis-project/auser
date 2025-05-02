@@ -2,7 +2,7 @@
 
 #include "net/http/client/url.h"
 
-namespace vdvauser {
+namespace auser {
 
     struct config {
         unsigned n_threads_{2};
@@ -18,4 +18,4 @@ namespace vdvauser {
         std::uint32_t subscription_duration_{3600U}; //s
     };
 
-}  // namespace vdvauser
+}  // namespace auser

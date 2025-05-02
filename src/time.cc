@@ -1,8 +1,8 @@
-#include "vdvauser/time.h"
+#include "auser/time.h"
 
 #include "date/date.h"
 
-namespace vdvauser {
+namespace auser {
 
 time now() { return std::chrono::system_clock::now(); }
 
@@ -18,4 +18,4 @@ time parse_timestamp(std::string const& str) {
   return parsed;
 }
 
-}  // namespace vdvauser
+}  // namespace auser

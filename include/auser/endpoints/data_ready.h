@@ -3,10 +3,10 @@
 #include <string>
 #include <string_view>
 
-namespace vdvauser {
+namespace auser {
 
 struct data_ready {
   std::string operator()(std::string_view) const;
 };
 
-}  // namespace vdvauser
+}  // namespace auser

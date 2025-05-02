@@ -11,7 +11,7 @@
 #include "boost/fiber/scheduler.hpp"
 #include "boost/intrusive_ptr.hpp"
 
-namespace vdvauser {
+namespace auser {
 
     struct fiber_props : public boost::fibers::fiber_properties {
         fiber_props(boost::fibers::context *);
@@ -68,4 +68,4 @@ namespace vdvauser {
         bool suspend_;
     };
 
-}  // namespace vdvauser
+}  // namespace auser

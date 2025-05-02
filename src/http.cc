@@ -1,4 +1,4 @@
-#include "vdvauser/http.h"
+#include "auser/http.h"
 
 #include "boost/asio/awaitable.hpp"
 #include "boost/asio/ssl.hpp"
@@ -14,7 +14,7 @@
 
 #include "utl/verify.h"
 
-namespace vdvauser {
+namespace auser {
 
     namespace beast = boost::beast;
     namespace http = beast::http;
@@ -155,4 +155,4 @@ namespace vdvauser {
         return body;
     }
 
-}  // namespace vdvauser
+}  // namespace auser

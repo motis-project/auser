@@ -10,17 +10,17 @@
 #include "utl/enumerate.h"
 #include "utl/set_thread_name.h"
 
-#include "vdvauser/config.h"
-#include "vdvauser/connection.h"
-#include "vdvauser/subscription.h"
-#include "vdvauser/scheduler/runner.h"
-#include "vdvauser/endpoints/client_status.h"
-#include "vdvauser/endpoints/data_ready.h"
+#include "auser/config.h"
+#include "auser/connection.h"
+#include "auser/subscription.h"
+#include "auser/scheduler/runner.h"
+#include "auser/endpoints/client_status.h"
+#include "auser/endpoints/data_ready.h"
 
 namespace bpo = boost::program_options;
 
 int main(int argc, char *argv[]) {
-    auto cfg = vdvauser::config{};
+    auto cfg = auser::config{};
     bpo::options_description desc("Allowed options");
     desc.add_options()("help,h", "produce this help message") //
             ("n_threads", bpo::value(&cfg.n_threads_)->default_value(cfg.n_threads_))  //
@@ -39,12 +39,12 @@ int main(int argc, char *argv[]) {
 
     auto ioc = boost::asio::io_context{};
     auto s = net::web_server{ioc};
-    auto r = vdvauser::runner{cfg.n_threads_, 1024U};
+    auto r = auser::runner{cfg.n_threads_, 1024U};
     auto qr = net::query_router{net::fiber_exec{ioc, r.ch_}};
-    qr.add_header("Server", "vdvauser");
-    auto con = vdvauser::connection{cfg};
-    qr.route("POST", con.client_status_path_, vdvauser::client_status{con});
-    qr.route("POST", con.data_ready_path_, vdvauser::data_ready{});
+    qr.add_header("Server", "auser");
+    auto con = auser::connection{cfg};
+    qr.route("POST", con.client_status_path_, auser::client_status{con});
+    qr.route("POST", con.data_ready_path_, auser::data_ready{});
     fmt::println("setup client status path: {}", con.client_status_path_);
     fmt::println("setup data ready path: {}", con.data_ready_path_);
 
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     auto vdvaus_subscription_ioc = std::make_unique<boost::asio::io_context>();
     auto vdvaus_subscription_thread = std::make_unique<std::thread>([&]() {
         utl::set_current_thread_name("motis vdvaus subscription");
-        vdvauser::subscription(*vdvaus_subscription_ioc, cfg, con);
+        auser::subscription(*vdvaus_subscription_ioc, cfg, con);
         vdvaus_subscription_ioc->run();
     });
 
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     }
 
     auto const stop = net::stop_handler(ioc, [&]() {
-        fmt::println("vdvauser shutdown");
+        fmt::println("auser shutdown");
         r.ch_.close();
         s.stop();
         ioc.stop();
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
             auto vdvaus_unsubscribe_ioc = std::make_unique<boost::asio::io_context>();
             auto vdvaus_unsubscribe_thread = std::thread{[&]() {
                 utl::set_current_thread_name("vdvaus unsubscribe");
-                vdvauser::shutdown(*vdvaus_unsubscribe_ioc, cfg, con);
+                auser::shutdown(*vdvaus_unsubscribe_ioc, cfg, con);
                 vdvaus_unsubscribe_ioc->run();
             }};
             vdvaus_unsubscribe_thread.join();

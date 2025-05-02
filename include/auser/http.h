@@ -9,7 +9,7 @@
 #include "boost/beast/http/message.hpp"
 #include "boost/url/url.hpp"
 
-namespace vdvauser {
+namespace auser {
 
     using http_response =
             boost::beast::http::response<boost::beast::http::dynamic_body>;
@@ -22,4 +22,4 @@ namespace vdvauser {
 
     std::string get_http_body(http_response const&);
 
-}  // namespace vdvauser
+}  // namespace auser

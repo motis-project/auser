@@ -1,10 +1,10 @@
-#include "vdvauser/endpoints/data_ready.h"
+#include "auser/endpoints/data_ready.h"
 
 #include "fmt/printf.h"
 
-#include "vdvauser/xml.h"
+#include "auser/xml.h"
 
-namespace vdvauser {
+namespace auser {
 
     std::string data_ready::operator()(std::string_view s) const {
         fmt::println("received data_ready_request: {}", s);
@@ -20,4 +20,4 @@ namespace vdvauser {
         return xml_to_str(doc);
     }
 
-}  // namespace vdvauser
+}  // namespace auser

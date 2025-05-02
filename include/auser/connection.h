@@ -4,21 +4,21 @@
 #include <string>
 #include <string_view>
 
-#include "vdvauser/config.h"
-#include "vdvauser/time.h"
+#include "auser/config.h"
+#include "auser/time.h"
 
-namespace vdvauser {
+namespace auser {
 
 auto const kHeaders = std::map<std::string, std::string>{
 {"Content-Type", "text/xml"}, {"Accept", "text/xml"}};
 
 struct connection {
-    explicit connection(vdvauser::config const&);
+    explicit connection(auser::config const&);
     void start();
     void stop();
     std::string make_fetch_req();
 
-    vdvauser::config const& cfg_;
+    auser::config const& cfg_;
     std::string client_status_path_;
     std::string data_ready_path_;
     std::string server_status_addr_;
@@ -28,4 +28,4 @@ struct connection {
     std::atomic<time> start_{time::min()};
 };
 
-} // namespace vdvauser
+} // namespace auser

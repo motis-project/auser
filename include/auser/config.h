@@ -19,6 +19,7 @@ struct config {
   std::uint32_t hysteresis_{30U};  // s
   std::uint32_t lookahead_{90000U};  // s
   std::uint32_t subscription_duration_{3600U};  // s
+  std::uint32_t update_interval_{60U};  // s
 };
 
 }  // namespace auser

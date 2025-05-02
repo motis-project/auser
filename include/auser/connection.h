@@ -18,7 +18,7 @@ struct connection {
 
   void start();
   void stop();
-  std::string make_fetch_req();
+  std::string make_fetch_req() const;
 
   auser::config const& cfg_;
   std::string client_status_path_;
@@ -28,6 +28,7 @@ struct connection {
   std::string fetch_data_addr_;
   std::atomic<std::chrono::seconds::rep> id_{0};
   std::atomic<time> start_{time::min()};
+  bool needs_update_;
 };
 
 }  // namespace auser

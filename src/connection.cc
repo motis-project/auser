@@ -40,7 +40,7 @@ void connection::stop() {
   start_ = time::min();
 }
 
-std::string connection::make_fetch_req() {
+std::string connection::make_fetch_req() const {
   auto doc = make_xml_doc();
   auto fetch_data_node = doc.append_child("DatenAbrufenAnfrage");
   fetch_data_node.append_attribute("Sender") = cfg_.client_name_.c_str();

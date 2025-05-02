@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 
 #include "boost/asio/io_context.hpp"
 #include "boost/program_options.hpp"
@@ -14,6 +15,7 @@
 #include "auser/connection.h"
 #include "auser/endpoints/client_status.h"
 #include "auser/endpoints/data_ready.h"
+#include "auser/fetch.h"
 #include "auser/scheduler/runner.h"
 #include "auser/subscription.h"
 
@@ -56,6 +58,8 @@ int main(int argc, char* argv[]) {
     fmt::println("setup data ready path: {}", conn.data_ready_path_);
   }
 
+  auto updates = std::make_shared<std::map<auser::time::rep, std::string>>();
+
   qr.enable_cors();
   s.set_timeout(std::chrono::minutes{5});
   s.on_http_request(std::move(qr));
@@ -79,6 +83,13 @@ int main(int argc, char* argv[]) {
     subscription_ioc.run();
   }};
 
+  auto fetch_ioc = boost::asio::io_context{};
+  auto fetch_thread = std::thread{[&]() {
+    utl::set_current_thread_name("VDV AUS fetch");
+    fetch(fetch_ioc, conns, updates);
+    fetch_ioc.run();
+  }};
+
   auto threads = std::vector<std::thread>{cfg.n_threads_};
   for (auto [i, t] : utl::enumerate(threads)) {
     t = std::thread{r.run_fn()};
@@ -86,7 +97,7 @@ int main(int argc, char* argv[]) {
   }
 
   auto const stop = net::stop_handler(ioc, [&]() {
-    fmt::println("auser shutdown");
+    fmt::println("shutdown");
     r.ch_.close();
     s.stop();
     ioc.stop();

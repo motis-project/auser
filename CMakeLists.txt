@@ -79,3 +79,9 @@ target_link_libraries(auserlib
 add_executable(auser exe/auser.cc)
 target_compile_features(auser PUBLIC cxx_std_23)
 target_link_libraries(auser boost-program_options auserlib)
+
+# --- TEST ---
+file(GLOB_RECURSE test-files test/*.cc)
+add_executable(auser-test ${test-files})
+target_link_libraries(auser-test auserlib gtest)
+target_compile_options(auser-test PRIVATE ${motis-compile-options})

@@ -2,6 +2,8 @@
 
 #include "fmt/printf.h"
 
+#include "auser/xml.h"
+
 namespace auser {
 
 std::string get_updates::operator()(boost::urls::url_view const& url) const {
@@ -18,7 +20,23 @@ std::string get_updates::operator()(boost::urls::url_view const& url) const {
     }
   }
 
-  auto const& [t, doc] = *updates_->upper_bound(since);
+  auto id = since;
+  auto doc = make_xml_doc();
+  auto msg = doc.append_child("AUSNachricht");
+
+  for (auto u = updates_->upper_bound(since); u != end(*updates_); ++u) {
+    auto const& [t, d] = *u;
+
+    for (auto const n : d.select_nodes("//AUSNachricht/*")) {
+      msg.append_copy(n.node());
+    }
+
+    id = t;
+  }
+
+  auto ret = std::stringstream{};
+  ret << "{\"id\": \"" << id << "\",\"update\": \"" << doc << "\"}";
+  return ret.str();
 }
 
 }  // namespace auser

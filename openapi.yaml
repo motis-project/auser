@@ -14,21 +14,29 @@ externalDocs:
 paths:
   /api/v1/get_updates:
     get:
-      summary: compiles all VDV AUS updates that arrived since the specified point in time into a single AUSNachricht
+      summary: compiles all VDV AUS updates that arrived after the specified update ID into a single AUSNachricht
       operationId: get_updates
       parameters:
         - name: since
           in: query
           required: true
           description:
-            unix time in microseconds of the previous update of the data consumer, zero in case of initial update
+            ID of the previous update of the data consumer, zero in case of initial update
           schema:
             type: integer
+            default: 0
 
       responses:
         '200':
-          description: VDV AUSNachricht containing all updates that arrived since the given point in time
+          description: new update ID and a VDV AUSNachricht containing all updates that arrived after the one with the given ID
           content:
-            text/xml:
+            application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  id:
+                    description: "the ID of this update"
+                    type: integer
+                  update:
+                    description: "VDV AUSNachricht xml"
+                    type: string

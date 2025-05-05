@@ -4,15 +4,15 @@
 
 namespace auser {
 
-time now() { return std::chrono::system_clock::now(); }
+time_t now() { return std::chrono::system_clock::now(); }
 
-std::string timestamp(const time t) {
+std::string timestamp(const time_t t) {
   return date::format("%FT%T",
                       std::chrono::time_point_cast<std::chrono::seconds>(t));
 }
 
-time parse_timestamp(std::string const& str) {
-  time parsed;
+time_t parse_timestamp(std::string const& str) {
+  time_t parsed;
   auto ss = std::stringstream{str};
   ss >> date::parse("%FT%T", parsed);
   return parsed;

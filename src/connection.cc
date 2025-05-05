@@ -37,7 +37,7 @@ void connection::start() {
 
 void connection::stop() {
   id_ = 0;
-  start_ = time::min();
+  start_ = time_t::min();
 }
 
 std::string connection::make_fetch_req() const {

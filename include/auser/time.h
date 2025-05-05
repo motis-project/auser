@@ -2,14 +2,14 @@
 
 #include <chrono>
 
+#include "auser/types.h"
+
 namespace auser {
 
-using time = std::chrono::time_point<std::chrono::system_clock>;
+time_t now();
 
-time now();
+std::string timestamp(time_t);
 
-std::string timestamp(time);
-
-time parse_timestamp(std::string const&);
+time_t parse_timestamp(std::string const&);
 
 }  // namespace auser

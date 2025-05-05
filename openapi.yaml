@@ -1,0 +1,34 @@
+openapi: 3.1.0
+info:
+  title: auser API
+  description: This is the auser API.
+  contact:
+    email: mority@posteo.net
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit
+  version: v1
+externalDocs:
+  description: Find out more about MOTIS
+  url: https://github.com/motis-project/motis
+paths:
+  /api/v1/get_updates:
+    get:
+      summary: compiles all VDV AUS updates that arrived since the specified point in time into a single AUSNachricht
+      operationId: get_updates
+      parameters:
+        - name: since
+          in: query
+          required: true
+          description:
+            unix time in microseconds of the previous update of the data consumer, zero in case of initial update
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: VDV AUSNachricht containing all updates that arrived since the given point in time
+          content:
+            text/xml:
+              schema:
+                type: string

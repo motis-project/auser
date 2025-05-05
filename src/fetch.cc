@@ -25,7 +25,7 @@ bool but_wait_there_is_more(std::string const& s) {
 void fetch(boost::asio::io_context& ioc,
            config const& cfg,
            std::vector<connection>& conns,
-           std::shared_ptr<std::map<time::rep, std::string>> updates) {
+           std::shared_ptr<updates_t> updates) {
   boost::asio::co_spawn(
       ioc,
       [&cfg, &conns, &updates]() -> boost::asio::awaitable<void> {
@@ -77,7 +77,7 @@ void fetch(boost::asio::io_context& ioc,
                                 boost::asio::use_awaitable);
           }
 
-          updates = std::make_shared<std::map<time::rep, std::string>>(
+          updates = std::make_shared<std::map<time_t::rep, std::string>>(
               std::move(new_updates));
 
           timer.expires_at(start + std::chrono::seconds{cfg.update_interval_});

@@ -18,6 +18,7 @@
 #include "auser/fetch.h"
 #include "auser/scheduler/runner.h"
 #include "auser/subscription.h"
+#include "auser/types.h"
 
 namespace bpo = boost::program_options;
 
@@ -58,7 +59,7 @@ int main(int argc, char* argv[]) {
     fmt::println("setup data ready path: {}", conn.data_ready_path_);
   }
 
-  auto updates = std::make_shared<std::map<auser::time::rep, std::string>>();
+  auto updates = std::make_shared<auser::updates_t>();
 
   qr.enable_cors();
   s.set_timeout(std::chrono::minutes{5});

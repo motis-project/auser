@@ -27,7 +27,7 @@ struct connection {
   std::string subscription_addr_;
   std::string fetch_data_addr_;
   std::atomic<std::chrono::seconds::rep> id_{0};
-  std::atomic<time> start_{time::min()};
+  std::atomic<time_t> start_{time_t::min()};
   bool needs_update_;
 };
 

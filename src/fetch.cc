@@ -17,9 +17,9 @@
 namespace auser {
 
 bool but_wait_there_is_more(std::string const& s) {
-  auto doc = parse(s);
-  // find WeitereDaten node with xpath
-  return false;
+  auto const doc = parse(s);
+  auto const found_more = doc.select_node("//WeitereDaten");
+  return found_more && found_more.node().text().as_bool();
 }
 
 void fetch(boost::asio::io_context& ioc,
@@ -94,5 +94,6 @@ void fetch(boost::asio::io_context& ioc,
         }
       },
       boost::asio::detached);
+}
 
 }  // namespace auser

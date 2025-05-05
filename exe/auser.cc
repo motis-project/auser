@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
   auto fetch_ioc = boost::asio::io_context{};
   auto fetch_thread = std::thread{[&]() {
     utl::set_current_thread_name("VDV AUS fetch");
-    fetch(fetch_ioc, conns, updates);
+    fetch(fetch_ioc, cfg, conns, updates);
     fetch_ioc.run();
   }};
 

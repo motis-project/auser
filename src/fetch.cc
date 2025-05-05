@@ -36,10 +36,8 @@ void fetch(boost::asio::io_context& ioc,
         while (true) {
           auto const start = std::chrono::steady_clock::now();
 
-          // create new updates map
           auto new_updates = *updates;
 
-          // get data
           for (auto& conn : conns) {
             conn.needs_update_ = true;
           }
@@ -72,7 +70,6 @@ void fetch(boost::asio::io_context& ioc,
                   });
             });
 
-            // wait for all updates to finish
             auto [idx, exceptions] =
                 co_await boost::asio::experimental::make_parallel_group(
                     awaitables)
@@ -80,11 +77,9 @@ void fetch(boost::asio::io_context& ioc,
                                 boost::asio::use_awaitable);
           }
 
-          // update pointer
           updates = std::make_shared<std::map<time::rep, std::string>>(
               std::move(new_updates));
 
-          // schedule next update
           timer.expires_at(start + std::chrono::seconds{cfg.update_interval_});
           co_await timer.async_wait(
               boost::asio::redirect_error(boost::asio::use_awaitable, ec));

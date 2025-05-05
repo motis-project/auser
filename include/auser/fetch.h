@@ -7,7 +7,7 @@
 
 namespace auser {
 
-bool but_wait_there_is_more(std::string const&);
+bool but_wait_there_is_more(pugi::xml_document const&);
 
 void fetch(boost::asio::io_context&,
            config const&,

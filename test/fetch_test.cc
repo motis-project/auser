@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "auser/fetch.h"
+#include "auser/xml.h"
 
 constexpr auto const kWeitereDatenTrue = R"__(
 <DatenAbrufenAntwort>
@@ -20,7 +21,8 @@ constexpr auto const kWeitereDatenMissing = R"__(
 )__";
 
 TEST(auser, but_wait_there_is_more) {
-  EXPECT_TRUE(auser::but_wait_there_is_more(kWeitereDatenTrue));
-  EXPECT_FALSE(auser::but_wait_there_is_more(kWeitereDatenFalse));
-  EXPECT_FALSE(auser::but_wait_there_is_more(kWeitereDatenMissing));
+  EXPECT_TRUE(auser::but_wait_there_is_more(auser::parse(kWeitereDatenTrue)));
+  EXPECT_FALSE(auser::but_wait_there_is_more(auser::parse(kWeitereDatenFalse)));
+  EXPECT_FALSE(
+      auser::but_wait_there_is_more(auser::parse(kWeitereDatenMissing)));
 }

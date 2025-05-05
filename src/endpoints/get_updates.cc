@@ -35,7 +35,9 @@ std::string get_updates::operator()(boost::urls::url_view const& url) const {
   }
 
   auto ret = std::stringstream{};
-  ret << "{\"id\": \"" << id << "\",\"update\": \"" << doc << "\"}";
+  ret << "{\"id\":\"" << id << "\",\"update\":\"";
+  doc.save(ret);
+  ret << "\"}";
   return ret.str();
 }
 

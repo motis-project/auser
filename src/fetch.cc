@@ -16,10 +16,20 @@
 
 namespace auser {
 
-bool but_wait_there_is_more(std::string const& s) {
-  auto const doc = parse(s);
+bool but_wait_there_is_more(pugi::xml_document const& doc) {
   auto const found_more = doc.select_node("//WeitereDaten");
   return found_more && found_more.node().text().as_bool();
+}
+
+updates_t copy(updates_t const& u) {
+  auto cp = updates_t{};
+  for (auto const& [k, v] : u) {
+    cp[k] = make_xml_doc();
+    for (auto const& c : v) {
+      cp[k].append_copy(c);
+    }
+  }
+  return cp;
 }
 
 void fetch(boost::asio::io_context& ioc,
@@ -36,7 +46,7 @@ void fetch(boost::asio::io_context& ioc,
         while (true) {
           auto const start = std::chrono::steady_clock::now();
 
-          auto new_updates = *updates;
+          auto new_updates = copy(*updates);
 
           for (auto& conn : conns) {
             conn.needs_update_ = true;
@@ -60,7 +70,7 @@ void fetch(boost::asio::io_context& ioc,
                       while (new_updates.contains(k)) {
                         ++k;
                       }
-                      new_updates[k] = get_http_body(res);
+                      new_updates[k] = parse(get_http_body(res));
 
                       conn.needs_update_ =
                           but_wait_there_is_more(new_updates[k]);
@@ -77,8 +87,7 @@ void fetch(boost::asio::io_context& ioc,
                                 boost::asio::use_awaitable);
           }
 
-          updates = std::make_shared<std::map<time_t::rep, std::string>>(
-              std::move(new_updates));
+          updates = std::make_shared<updates_t>(std::move(new_updates));
 
           timer.expires_at(start + std::chrono::seconds{cfg.update_interval_});
           co_await timer.async_wait(

@@ -58,7 +58,6 @@ std::string subscribe_body(config const& cfg, connection const& conn) {
 boost::asio::awaitable<void> unsubscribe(boost::asio::io_context& ioc,
                                          config const& cfg,
                                          std::vector<connection>& conns) {
-  fmt::println("unsubscribe for {} connections", conns.size());
   co_await boost::asio::co_spawn(
       ioc,
       [&cfg, &conns]() -> boost::asio::awaitable<void> {
@@ -67,17 +66,21 @@ boost::asio::awaitable<void> unsubscribe(boost::asio::io_context& ioc,
           return boost::asio::co_spawn(
               executor,
               [&cfg, &conn]() -> boost::asio::awaitable<void> {
+                conn.stop();
                 try {
                   auto const res = co_await http_POST(
                       boost::urls::url{conn.subscription_addr_}, kHeaders,
                       unsubscribe_body(conn),
                       std::chrono::seconds{cfg.timeout_});
                   if (res.result_int() != 200U) {
-                    fmt::println("unsubscribe response: {}",
-                                 get_http_body(res));
+                    fmt::println("unsubscribe failed: {}", get_http_body(res));
+                  } else {
+                    fmt::println("unsubscribe success: {} @ {}",
+                                 conn.cfg_.server_name_,
+                                 conn.cfg_.server_addr_);
                   }
                 } catch (std::exception const& e) {
-                  fmt::println("unsubscribe catch: {}", e.what());
+                  fmt::println("unsubscribe exception: {}", e.what());
                 }
               },
               boost::asio::deferred);
@@ -108,11 +111,15 @@ boost::asio::awaitable<void> subscribe(boost::asio::io_context& ioc,
                       std::chrono::seconds{cfg.timeout_});
                   if (res.result_int() != 200U) {
                     conn.stop();
-                    fmt::println("subscribe response: {}", get_http_body(res));
+                    fmt::println("subscribe failed: {}", get_http_body(res));
+                  } else {
+                    fmt::println("subscribe success: {} @ {}",
+                                 conn.cfg_.server_name_,
+                                 conn.cfg_.server_addr_);
                   }
                 } catch (std::exception const& e) {
                   conn.stop();
-                  fmt::println("subscribe catch: {}", e.what());
+                  fmt::println("subscribe exception: {}", e.what());
                 }
               },
               boost::asio::deferred);

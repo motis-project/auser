@@ -12,7 +12,7 @@ namespace auser {
 struct get_updates {
   std::string operator()(boost::urls::url_view const&) const;
 
-  std::shared_ptr<updates_t> updates_;
+  std::shared_ptr<history_t> history_;
 };
 
 }  // namespace auser

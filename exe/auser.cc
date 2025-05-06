@@ -15,6 +15,7 @@
 #include "auser/connection.h"
 #include "auser/endpoints/client_status.h"
 #include "auser/endpoints/data_ready.h"
+#include "auser/endpoints/get_updates.h"
 #include "auser/fetch.h"
 #include "auser/scheduler/runner.h"
 #include "auser/subscription.h"
@@ -59,7 +60,8 @@ int main(int argc, char* argv[]) {
     fmt::println("setup data ready path: {}", conn.data_ready_path_);
   }
 
-  auto updates = std::make_shared<auser::updates_t>();
+  auto history = std::make_shared<auser::history_t>();
+  qr.route("GET", "api/v1/get_updates", auser::get_updates{history});
 
   qr.enable_cors();
   s.set_timeout(std::chrono::minutes{5});
@@ -87,7 +89,7 @@ int main(int argc, char* argv[]) {
   auto fetch_ioc = boost::asio::io_context{};
   auto fetch_thread = std::thread{[&]() {
     utl::set_current_thread_name("VDV AUS fetch");
-    fetch(fetch_ioc, cfg, conns, updates);
+    fetch(fetch_ioc, cfg, conns, history);
     fetch_ioc.run();
   }};
 

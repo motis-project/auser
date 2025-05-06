@@ -479,22 +479,22 @@ constexpr auto const exp_too_high =
 "})";
 
 TEST(auser, get_updates) {
-  auto updates = std::make_shared<auser::updates_t>();
-  auto const gu = auser::get_updates{updates};
+  auto history = std::make_shared<auser::history_t>();
+  auto const gu = auser::get_updates{history};
 
   EXPECT_EQ(exp_empty, gu("http://www.example.com/api/v1/get_updates"));
 
-  updates->emplace(1, auser::parse(update_0));
+  history->emplace(1, auser::parse(update_0));
 
   auto const res_0 = gu("http://www.example.com/api/v1/get_updates?since=0");
   EXPECT_EQ(exp_0, res_0);
   EXPECT_EQ(res_0, gu("http://www.example.com/api/v1/get_updates"));
 
-  updates->emplace(2, auser::parse(update_1));
+  history->emplace(2, auser::parse(update_1));
 
   EXPECT_EQ(exp_1, gu("http://www.example.com/api/v1/get_updates?since=1"));
 
-  updates->emplace(3, auser::parse(update_2));
+  history->emplace(3, auser::parse(update_2));
 
   EXPECT_EQ(exp_2, gu("http://www.example.com/api/v1/get_updates?since=2"));
   EXPECT_EQ(exp_all, gu("http://www.example.com/api/v1/get_updates?since=0"));

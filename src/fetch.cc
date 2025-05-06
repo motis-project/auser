@@ -21,24 +21,33 @@ bool but_wait_there_is_more(pugi::xml_document const& doc) {
   return found_more && found_more.node().text().as_bool();
 }
 
-updates_t copy(updates_t const& u) {
-  auto cp = updates_t{};
+history_t cleanup_copy(history_t const& u, config const& cfg) {
+  auto const old = (now() - std::chrono::seconds{cfg.subscription_duration_})
+                       .time_since_epoch()
+                       .count();
+
+  auto copy = history_t{};
   for (auto const& [k, v] : u) {
-    cp[k] = make_xml_doc();
+    if (k < old) {
+      continue;
+    }
+
+    copy[k] = make_xml_doc();
     for (auto const& c : v) {
-      cp[k].append_copy(c);
+      copy[k].append_copy(c);
     }
   }
-  return cp;
+
+  return copy;
 }
 
 void fetch(boost::asio::io_context& ioc,
            config const& cfg,
            std::vector<connection>& conns,
-           std::shared_ptr<updates_t> updates) {
+           std::shared_ptr<history_t> history) {
   boost::asio::co_spawn(
       ioc,
-      [&cfg, &conns, &updates]() -> boost::asio::awaitable<void> {
+      [&cfg, &conns, &history]() -> boost::asio::awaitable<void> {
         auto executor = co_await boost::asio::this_coro::executor;
         auto timer = boost::asio::steady_timer{executor};
         auto ec = boost::system::error_code{};
@@ -46,7 +55,7 @@ void fetch(boost::asio::io_context& ioc,
         while (true) {
           auto const start = std::chrono::steady_clock::now();
 
-          auto new_updates = copy(*updates);
+          auto new_history = cleanup_copy(*history, cfg);
 
           for (auto& conn : conns) {
             conn.needs_update_ = true;
@@ -67,13 +76,13 @@ void fetch(boost::asio::io_context& ioc,
                           std::chrono::seconds{conn.cfg_.timeout_});
 
                       auto k = now().time_since_epoch().count();
-                      while (new_updates.contains(k)) {
+                      while (new_history.contains(k)) {
                         ++k;
                       }
-                      new_updates[k] = parse(get_http_body(res));
+                      new_history[k] = parse(get_http_body(res));
 
                       conn.needs_update_ =
-                          but_wait_there_is_more(new_updates[k]);
+                          but_wait_there_is_more(new_history[k]);
                     } catch (std::exception const& e) {
                       fmt::println("fetch catch: {}", e.what());
                     }
@@ -87,7 +96,7 @@ void fetch(boost::asio::io_context& ioc,
                                 boost::asio::use_awaitable);
           }
 
-          updates = std::make_shared<updates_t>(std::move(new_updates));
+          history = std::make_shared<history_t>(std::move(new_history));
 
           timer.expires_at(start + std::chrono::seconds{cfg.update_interval_});
           co_await timer.async_wait(

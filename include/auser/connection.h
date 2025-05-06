@@ -28,7 +28,7 @@ struct connection {
   std::string fetch_data_addr_;
   std::atomic<std::chrono::seconds::rep> id_{0};
   std::atomic<time_t> start_{time_t::min()};
-  bool needs_update_;
+  bool needs_update_{false};
 };
 
 }  // namespace auser

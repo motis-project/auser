@@ -24,7 +24,7 @@ std::string get_updates::operator()(boost::urls::url_view const& url) const {
   auto doc = make_xml_doc();
   auto msg = doc.append_child("AUSNachricht");
 
-  for (auto u = updates_->upper_bound(since); u != end(*updates_); ++u) {
+  for (auto u = history_->upper_bound(since); u != end(*history_); ++u) {
     auto const& [t, d] = *u;
 
     for (auto const n : d.select_nodes("//AUSNachricht/*")) {

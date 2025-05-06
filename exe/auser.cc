@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
   }
 
   auto history = std::make_shared<auser::history_t>();
-  qr.route("GET", "api/v1/get_updates", auser::get_updates{history});
+  qr.route("GET", "/api/v1/get_updates", auser::get_updates{history});
 
   qr.enable_cors();
   s.set_timeout(std::chrono::minutes{5});

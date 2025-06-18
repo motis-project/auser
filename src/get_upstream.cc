@@ -1,4 +1,4 @@
-#include "auser/fetch.h"
+#include "auser/get_upstream.h"
 
 #include "boost/asio/co_spawn.hpp"
 #include "boost/asio/detached.hpp"
@@ -41,7 +41,7 @@ history_t cleanup_copy(history_t const& u, config const& cfg) {
   return copy;
 }
 
-void fetch(boost::asio::io_context& ioc,
+void get_upstream(boost::asio::io_context& ioc,
            config const& cfg,
            std::vector<connection>& conns,
            std::shared_ptr<history_t> history) {

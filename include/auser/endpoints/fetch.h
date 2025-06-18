@@ -9,7 +9,7 @@
 
 namespace auser {
 
-struct get_updates {
+struct fetch {
   std::string operator()(boost::urls::url_view const&) const;
 
   std::shared_ptr<history_t> history_;

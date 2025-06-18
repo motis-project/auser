@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "auser/endpoints/get_updates.h"
+#include "auser/endpoints/fetch.h"
 #include "auser/xml.h"
 
 constexpr auto const update_0 = R"(
@@ -478,9 +478,9 @@ constexpr auto const exp_too_high =
 <AUSNachricht />
 "})";
 
-TEST(auser, get_updates) {
+TEST(auser, fetch) {
   auto history = std::make_shared<auser::history_t>();
-  auto const gu = auser::get_updates{history};
+  auto const gu = auser::fetch{history};
 
   EXPECT_EQ(exp_empty, gu("http://www.example.com/api/v1/get_updates"));
 

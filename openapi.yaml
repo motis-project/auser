@@ -12,10 +12,10 @@ externalDocs:
   description: Find out more about MOTIS
   url: https://github.com/motis-project/motis
 paths:
-  /api/v1/get_updates:
+  /api/v1/auser/fetch:
     get:
       summary: compiles all VDV AUS updates that arrived after the specified update ID into a single AUSNachricht
-      operationId: get_updates
+      operationId: auser_fetch
       parameters:
         - name: since
           in: query

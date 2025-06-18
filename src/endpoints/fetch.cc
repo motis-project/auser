@@ -1,4 +1,4 @@
-#include "auser/endpoints/get_updates.h"
+#include "auser/endpoints/fetch.h"
 
 #include "fmt/printf.h"
 
@@ -6,7 +6,7 @@
 
 namespace auser {
 
-std::string get_updates::operator()(boost::urls::url_view const& url) const {
+std::string fetch::operator()(boost::urls::url_view const& url) const {
 
   auto since = time_t::rep{0};
   auto const params = url.params();

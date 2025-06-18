@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "auser/fetch.h"
+#include "auser/get_upstream.h"
 #include "auser/xml.h"
 
 constexpr auto const kWeitereDatenTrue = R"__(

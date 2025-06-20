@@ -15,7 +15,7 @@ std::string fetch::operator()(boost::urls::url_view const& url) const {
     try {
       since = std::stol(since_param_str);
     } catch (std::exception const& e) {
-      fmt::println("[get_updates] could not parse parameter since: {}, {}",
+      fmt::println("[fetch] could not parse parameter since: {}, {}",
                    since_param_str, e.what());
     }
   }
@@ -34,10 +34,10 @@ std::string fetch::operator()(boost::urls::url_view const& url) const {
     id = t;
   }
 
+  msg.append_attribute("auser_id") = id;
+
   auto ret = std::stringstream{};
-  ret << "{\"id\":\"" << id << "\",\"update\":\"";
   doc.save(ret);
-  ret << "\"}";
   return ret.str();
 }
 

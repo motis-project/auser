@@ -1,5 +1,7 @@
 #include "auser/subscription.h"
 
+#include <iostream>
+
 #include "boost/asio/co_spawn.hpp"
 #include "boost/asio/detached.hpp"
 #include "boost/asio/experimental/parallel_group.hpp"
@@ -67,6 +69,7 @@ boost::asio::awaitable<void> unsubscribe(boost::asio::io_context& ioc,
               executor,
               [&cfg, &conn]() -> boost::asio::awaitable<void> {
                 conn.stop();
+                fmt::println("unsubscribing from: {}", conn.subscription_addr_);
                 try {
                   auto const res = co_await http_POST(
                       boost::urls::url{conn.subscription_addr_}, kHeaders,
@@ -103,6 +106,7 @@ boost::asio::awaitable<void> subscribe(boost::asio::io_context& ioc,
           return boost::asio::co_spawn(
               executor,
               [&cfg, &conn]() -> boost::asio::awaitable<void> {
+                fmt::println("subscribing to: {}", conn.subscription_addr_);
                 conn.start();
                 try {
                   auto const res = co_await http_POST(

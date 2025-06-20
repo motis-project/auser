@@ -100,14 +100,10 @@ void get_upstream(boost::asio::io_context& ioc,
           }
 
           history = std::make_shared<history_t>(std::move(new_history));
-          fmt::println("[get_upstream] History entries after get_upstream:{}",
-                       [&]() {
-                         auto ss = std::stringstream{};
-                         for (auto const& [k, e] : *history) {
-                           ss << "\n" << k;
-                         }
-                         return ss.str();
-                       }());
+          fmt::println(
+              "[get_upstream] {} --> {}",
+              history->size() > 1U ? (std::next(rbegin(*history)))->first : 0,
+              history->empty() ? 0 : rbegin(*history)->first);
 
           timer.expires_at(start + std::chrono::seconds{cfg.update_interval_});
           co_await timer.async_wait(

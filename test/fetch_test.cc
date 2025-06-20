@@ -479,27 +479,23 @@ constexpr auto const exp_greater_or_equal =
 <AUSNachricht auser_id="3" />
 )";
 
-void get_upstream_mock(
-    std::shared_ptr<std::unique_ptr<auser::history_t>>& history,
-    std::string const& update) {
+void get_upstream_mock(std::shared_ptr<auser::history_t>& history,
+                       std::string const& update) {
   auto copy = auser::history_t{};
-  for (auto const& [k, v] : **history) {
+  for (auto const& [k, v] : *history) {
     copy[k] = auser::make_xml_doc();
     for (auto const& c : v) {
       copy[k].append_copy(c);
     }
   }
 
-  auto new_history = std::make_unique<auser::history_t>(std::move(copy));
-  new_history->try_emplace(new_history->size() + 1, auser::parse(update));
+  copy.try_emplace(copy.size() + 1, auser::parse(update));
 
-  history = std::make_shared<std::unique_ptr<auser::history_t>>(
-      std::move(new_history));
+  history = std::make_shared<auser::history_t>(std::move(copy));
 }
 
 TEST(auser, fetch) {
-  auto history = std::make_shared<std::unique_ptr<auser::history_t>>(
-      std::make_unique<auser::history_t>());
+  auto history = std::make_shared<auser::history_t>();
   auto const af = auser::fetch{history};
 
   EXPECT_EQ(exp_empty, af("http://www.example.com/api/v1/get_updates"));

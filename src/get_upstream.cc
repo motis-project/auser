@@ -45,7 +45,7 @@ history_t cleanup_copy(history_t const& u, config const& cfg) {
 void get_upstream(boost::asio::io_context& ioc,
                   config const& cfg,
                   std::vector<connection>& conns,
-                  std::shared_ptr<std::unique_ptr<history_t>>& history) {
+                  std::shared_ptr<history_t>& history) {
   boost::asio::co_spawn(
       ioc,
       [&cfg, &conns, &history]() -> boost::asio::awaitable<void> {
@@ -56,8 +56,7 @@ void get_upstream(boost::asio::io_context& ioc,
         while (true) {
           auto const start = std::chrono::steady_clock::now();
 
-          auto new_history =
-              std::make_unique<history_t>(cleanup_copy(**history, cfg));
+          auto new_history = cleanup_copy(*history, cfg);
 
           for (auto& conn : conns) {
             conn.needs_update_ = true;
@@ -78,15 +77,15 @@ void get_upstream(boost::asio::io_context& ioc,
                           std::chrono::seconds{conn.cfg_.timeout_});
 
                       auto k = now().time_since_epoch().count();
-                      while (new_history->contains(k)) {
+                      while (new_history.contains(k)) {
                         ++k;
                       }
-                      new_history->try_emplace(k, parse(get_http_body(res)));
+                      new_history.try_emplace(k, parse(get_http_body(res)));
 
                       conn.needs_update_ =
-                          but_wait_there_is_more(new_history->at(k));
+                          but_wait_there_is_more(new_history.at(k));
 
-                      new_history->at(k).save_file(std::to_string(k).c_str());
+                      new_history.at(k).save_file(std::to_string(k).c_str());
                     } catch (std::exception const& e) {
                       fmt::println("[get_upstream] catch: {}", e.what());
                     }
@@ -100,12 +99,11 @@ void get_upstream(boost::asio::io_context& ioc,
                                 boost::asio::use_awaitable);
           }
 
-          history = std::make_shared<std::unique_ptr<history_t>>(
-              std::move(new_history));
+          history = std::make_shared<history_t>(std::move(new_history));
           fmt::println("[get_upstream] History entries after get_upstream:{}",
                        [&]() {
                          auto ss = std::stringstream{};
-                         for (auto const& [k, e] : **history) {
+                         for (auto const& [k, e] : *history) {
                            ss << "\n" << k;
                          }
                          return ss.str();

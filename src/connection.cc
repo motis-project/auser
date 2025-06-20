@@ -16,7 +16,7 @@ connection::connection(auser::config const& cfg)
           "{}/{}/aus/status.xml", cfg.server_addr_, cfg.client_name_)},
       subscription_addr_{fmt::format(
           "{}/{}/aus/aboverwalten.xml", cfg.server_addr_, cfg.client_name_)},
-      fetch_data_addr_{fmt::format(
+      get_upstream_data_addr_{fmt::format(
           "{}/{}/aus/datenabrufen.xml", cfg.server_addr_, cfg.client_name_)} {}
 
 connection::connection(connection&& other) noexcept
@@ -25,7 +25,7 @@ connection::connection(connection&& other) noexcept
       data_ready_path_{std::move(other.data_ready_path_)},
       server_status_addr_{std::move(other.server_status_addr_)},
       subscription_addr_{std::move(other.subscription_addr_)},
-      fetch_data_addr_{std::move(other.fetch_data_addr_)} {}
+      get_upstream_data_addr_{std::move(other.get_upstream_data_addr_)} {}
 
 void connection::start() {
   id_ =
@@ -40,7 +40,7 @@ void connection::stop() {
   start_ = time_t::min();
 }
 
-std::string connection::make_fetch_req() const {
+std::string connection::make_get_upstream_req() const {
   auto doc = make_xml_doc();
   auto fetch_data_node = doc.append_child("DatenAbrufenAnfrage");
   fetch_data_node.append_attribute("Sender") = cfg_.client_name_.c_str();

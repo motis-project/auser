@@ -18,14 +18,14 @@ struct connection {
 
   void start();
   void stop();
-  std::string make_fetch_req() const;
+  std::string make_get_upstream_req() const;
 
   auser::config const& cfg_;
   std::string client_status_path_;
   std::string data_ready_path_;
   std::string server_status_addr_;
   std::string subscription_addr_;
-  std::string fetch_data_addr_;
+  std::string get_upstream_data_addr_;
   std::atomic<std::chrono::seconds::rep> id_{0};
   std::atomic<time_t> start_{time_t::min()};
   bool needs_update_{false};

@@ -71,8 +71,8 @@ void get_upstream(boost::asio::io_context& ioc,
 
                     try {
                       auto const res = co_await http_POST(
-                          boost::urls::url{conn.fetch_data_addr_}, kHeaders,
-                          conn.make_fetch_req(),
+                          boost::urls::url{conn.get_upstream_data_addr_}, kHeaders,
+                          conn.make_get_upstream_req(),
                           std::chrono::seconds{conn.cfg_.timeout_});
 
                       auto k = now().time_since_epoch().count();
@@ -83,8 +83,9 @@ void get_upstream(boost::asio::io_context& ioc,
 
                       conn.needs_update_ =
                           but_wait_there_is_more(new_history[k]);
+                      fmt::println("[get_upstream] added entry {}{}", k, conn.needs_update_ ? ", but there is more" : "");
                     } catch (std::exception const& e) {
-                      fmt::println("fetch catch: {}", e.what());
+                      fmt::println("[get_upstream] catch: {}", e.what());
                     }
                   });
             });

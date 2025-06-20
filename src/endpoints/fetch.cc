@@ -23,18 +23,20 @@ std::string fetch::operator()(boost::urls::url_view const& url) const {
   auto id = since;
   auto doc = make_xml_doc();
   auto msg = doc.append_child("AUSNachricht");
-
+  auto n_rides = 0U;
   for (auto u = history_->upper_bound(since); u != end(*history_); ++u) {
     auto const& [t, d] = *u;
 
     for (auto const n : d.select_nodes("//AUSNachricht/*")) {
       msg.append_copy(n.node());
+      ++n_rides;
     }
 
     id = t;
   }
-
   msg.append_attribute("auser_id") = id;
+
+  fmt::println("[fetch] {} --> {}, updates for {} rides", since, id, n_rides);
 
   auto ret = std::stringstream{};
   doc.save(ret);

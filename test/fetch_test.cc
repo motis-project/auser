@@ -474,39 +474,53 @@ constexpr auto const exp_all =
 </AUSNachricht>
 )";
 
-constexpr auto const exp_equal =
+constexpr auto const exp_greater_or_equal =
     R"(<?xml version="1.0" encoding="iso-8859-1"?>
 <AUSNachricht auser_id="3" />
 )";
 
-constexpr auto const exp_too_high =
-    R"(<?xml version="1.0" encoding="iso-8859-1"?>
-<AUSNachricht auser_id="42" />
-)";
+void get_upstream_mock(
+    std::shared_ptr<std::unique_ptr<auser::history_t>>& history,
+    std::string const& update) {
+  auto copy = auser::history_t{};
+  for (auto const& [k, v] : **history) {
+    copy[k] = auser::make_xml_doc();
+    for (auto const& c : v) {
+      copy[k].append_copy(c);
+    }
+  }
+
+  auto new_history = std::make_unique<auser::history_t>(std::move(copy));
+  new_history->try_emplace(new_history->size() + 1, auser::parse(update));
+
+  history = std::make_shared<std::unique_ptr<auser::history_t>>(
+      std::move(new_history));
+}
 
 TEST(auser, fetch) {
-  auto history = std::make_shared<auser::history_t>();
+  auto history = std::make_shared<std::unique_ptr<auser::history_t>>(
+      std::make_unique<auser::history_t>());
   auto const af = auser::fetch{history};
 
   EXPECT_EQ(exp_empty, af("http://www.example.com/api/v1/get_updates"));
 
-  history->emplace(1, auser::parse(update_0));
+  get_upstream_mock(history, update_0);
 
   auto const res_0 = af("http://www.example.com/api/v1/get_updates?since=0");
   EXPECT_EQ(exp_0, res_0);
   EXPECT_EQ(res_0, af("http://www.example.com/api/v1/get_updates"));
 
-  history->emplace(2, auser::parse(update_1));
+  get_upstream_mock(history, update_1);
 
   EXPECT_EQ(exp_1, af("http://www.example.com/api/v1/get_updates?since=1"));
 
-  history->emplace(3, auser::parse(update_2));
+  get_upstream_mock(history, update_2);
 
   EXPECT_EQ(exp_2, af("http://www.example.com/api/v1/get_updates?since=2"));
   EXPECT_EQ(exp_all, af("http://www.example.com/api/v1/get_updates?since=0"));
-  EXPECT_EQ(exp_equal,
+  EXPECT_EQ(exp_greater_or_equal,
             af("http://www.example.com/api/v1/get_updates?since=3"));
-  EXPECT_EQ(exp_too_high,
+  EXPECT_EQ(exp_greater_or_equal,
             af("http://www.example.com/api/v1/get_updates?since=42"));
 }
 

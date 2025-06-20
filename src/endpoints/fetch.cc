@@ -7,6 +7,7 @@
 namespace auser {
 
 std::string fetch::operator()(boost::urls::url_view const& url) const {
+  auto const history = history_;
 
   auto since = time_t::rep{0};
   auto const params = url.params();
@@ -20,23 +21,20 @@ std::string fetch::operator()(boost::urls::url_view const& url) const {
     }
   }
 
-  auto id = since;
   auto doc = make_xml_doc();
   auto msg = doc.append_child("AUSNachricht");
+  auto const now = (*history)->empty() ? time_t::rep{0} : (*history)->rbegin()->first;
+  msg.append_attribute("auser_id") = now;
   auto n_rides = 0U;
-  for (auto u = history_->upper_bound(since); u != end(*history_); ++u) {
+  fmt::println("[fetch] assembling: {} --> {}", since, now);
+  for (auto u = (*history)->upper_bound(since); u != end(**history); ++u) {
     auto const& [t, d] = *u;
-
     for (auto const n : d.select_nodes("//AUSNachricht/*")) {
       msg.append_copy(n.node());
       ++n_rides;
     }
-
-    id = t;
   }
-  msg.append_attribute("auser_id") = id;
-
-  fmt::println("[fetch] {} --> {}, updates for {} rides", since, id, n_rides);
+  fmt::println("[fetch] emitting: {} --> {} (updates for {} rides)", since, now, n_rides);
 
   auto ret = std::stringstream{};
   doc.save(ret);

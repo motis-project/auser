@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     fmt::println("setup data ready path: {}", conn.data_ready_path_);
   }
 
-  auto history = std::make_shared<auser::history_t>();
+  auto history = std::make_shared<std::unique_ptr<auser::history_t>>(std::make_unique<auser::history_t>());
   qr.route("GET", "/auser/fetch", auser::fetch{history});
 
   qr.enable_cors();

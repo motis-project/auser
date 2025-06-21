@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "boost/url/url_view.hpp"
+#include "net/web_server/query_router.h"
 
 #include "auser/time.h"
 #include "auser/types.h"
@@ -10,7 +10,7 @@
 namespace auser {
 
 struct fetch {
-  std::string operator()(boost::urls::url_view const&) const;
+  net::reply operator()(net::route_request const&, bool) const;
 
   std::shared_ptr<history_t> const& history_;
 };

@@ -6,18 +6,19 @@
 
 namespace auser {
 
-std::string fetch::operator()(boost::urls::url_view const& url) const {
+net::reply fetch::operator()(net::route_request const& req, bool) const {
   auto const history = history_;
 
   auto since = time_t::rep{0};
-  auto const params = url.params();
-  if (params.contains("since")) {
-    auto const since_param_str = (*url.params().find_last("since")).value;
-    try {
-      since = std::stol(since_param_str);
-    } catch (std::exception const& e) {
-      fmt::println("[fetch] could not parse parameter since: {}, {}",
-                   since_param_str, e.what());
+  for (auto const& p : req.url_.params()) {
+    if (p.key == "since" && p.has_value) {
+      try {
+        since = std::stol(p.value);
+      } catch (std::exception const& e) {
+        fmt::println("[fetch] could not parse parameter since: {}, {}", p.value,
+                     e.what());
+      }
+      break;
     }
   }
 
@@ -35,9 +36,12 @@ std::string fetch::operator()(boost::urls::url_view const& url) const {
   }
   fmt::println("[fetch] {} --> {} (updates for {} rides)", since, now, n_rides);
 
-  auto ret = std::stringstream{};
-  doc.save(ret);
-  return ret.str();
+  auto res = net::web_server::string_res_t{boost::beast::http::status::ok,
+                                           req.version()};
+  auto ss = std::stringstream{};
+  doc.save(ss);
+  res.body() = ss.str();
+  return res;
 }
 
 }  // namespace auser

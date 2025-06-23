@@ -3,13 +3,13 @@ handles VDV AUS subscription and offers the received updates for data consumers
 
 
 ## Start service
-Specify client attributes and to which VDV AUS server you want to subscribe.
+Specify client attributes and which VDV AUS server to subscribe to.
 ```shell
 ./auser --client_name client --client_ip X.X.X.X --client_port 80 --server_name server --server_addr http://Y.Y.Y.Y:80
 ```
 
 ## Fetch updates
-Send GET Request to
+As a downstream data consumer, send GET Request to the `auser` instance
 ```
 X.X.X.X:80/auser/fetch?since=23
 ```

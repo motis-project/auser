@@ -38,9 +38,7 @@ net::reply fetch::operator()(net::route_request const& req, bool) const {
 
   auto res = net::web_server::string_res_t{boost::beast::http::status::ok,
                                            req.version()};
-  auto ss = std::stringstream{};
-  doc.save(ss);
-  res.body() = ss.str();
+  res.body() = xml_to_str(doc);
   return res;
 }
 

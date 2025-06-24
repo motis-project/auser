@@ -28,17 +28,10 @@ connection::connection(connection&& other) noexcept
       get_upstream_data_addr_{std::move(other.get_upstream_data_addr_)} {}
 
 void connection::start() {
-  id_ =
-      std::chrono::round<std::chrono::seconds>(std::chrono::system_clock::now())
-          .time_since_epoch()
-          .count();
-  start_ = now();
+  prev_id_ = id_.exchange(now().time_since_epoch().count());
 }
 
-void connection::stop() {
-  id_ = 0;
-  start_ = time_t::min();
-}
+void connection::stop() { id_ = 0; }
 
 std::string connection::make_get_upstream_req() const {
   auto doc = make_xml_doc();

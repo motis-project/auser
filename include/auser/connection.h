@@ -26,8 +26,8 @@ struct connection {
   std::string server_status_addr_;
   std::string subscription_addr_;
   std::string get_upstream_data_addr_;
-  std::atomic<std::chrono::seconds::rep> id_{0};
-  std::atomic<time_t> start_{time_t::min()};
+  std::atomic<time_t::rep> id_{0};
+  std::atomic<time_t::rep> prev_id_{0};
   bool needs_update_{false};
 };
 

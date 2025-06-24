@@ -18,17 +18,22 @@ net::reply client_status::operator()(net::route_request const& req,
   status_node.append_attribute("Zst") = timestamp(now()).c_str();
   status_node.append_attribute("Ergebnis") = "ok";
 
-  auto start_time_node = client_status_res_node.append_child("StartDienstZst");
-  start_time_node.append_child(pugi::node_pcdata)
-      .set_value(timestamp(conn_.start_).c_str());
+  auto const id = conn_.id_.load();
+
+  if (id > 0) {
+    auto start_time_node =
+        client_status_res_node.append_child("StartDienstZst");
+    start_time_node.append_child(pugi::node_pcdata)
+        .set_value(timestamp(time_t{time_t::duration{id}}).c_str());
+  }
 
   auto active_subs_node = client_status_res_node.append_child("AktiveAbos");
-  if (conn_.id_ != 0) {
+  if (id > 0) {
     auto active_sub_node = active_subs_node.append_child("AboAUS");
     active_sub_node.append_attribute("AboID") =
         std::to_string(conn_.id_).c_str();
     active_sub_node.append_attribute("VerfallZst") =
-        timestamp(conn_.start_.load() +
+        timestamp(time_t{time_t::duration{id}} +
                   std::chrono::seconds{conn_.cfg_.subscription_duration_})
             .c_str();
   }

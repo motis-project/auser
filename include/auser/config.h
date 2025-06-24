@@ -9,7 +9,6 @@ namespace auser {
 
 struct config {
   unsigned n_threads_{2};
-  std::string data_dir_{"data"};
   std::string client_name_{"client"};
   std::string client_ip_{"0.0.0.0"};
   std::string client_port_{"8080"};

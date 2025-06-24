@@ -22,14 +22,11 @@ bool but_wait_there_is_more(pugi::xml_document const& doc) {
   return found_more && found_more.node().text().as_bool();
 }
 
-history_t cleanup_copy(history_t const& u, config const& cfg) {
-  auto const old = (now() - std::chrono::seconds{cfg.subscription_duration_})
-                       .time_since_epoch()
-                       .count();
+history_t cleaned_up(history_t const& h, time_t::rep const discard_before) {
 
   auto copy = history_t{};
-  for (auto const& [k, v] : u) {
-    if (k < old) {
+  for (auto const& [k, v] : h) {
+    if (k < discard_before) {
       continue;
     }
 
@@ -56,11 +53,15 @@ void get_upstream(boost::asio::io_context& ioc,
         while (true) {
           auto const start = std::chrono::steady_clock::now();
 
-          auto new_history = cleanup_copy(*history, cfg);
-
+          auto discard_before = std::numeric_limits<time_t::rep>::max();
           for (auto& conn : conns) {
+            discard_before = std::min(discard_before, conn.prev_id_.load());
             conn.needs_update_ = true;
           }
+
+          auto new_history = cleaned_up(*history, discard_before);
+          auto m = std::mutex{};
+
           while (utl::any_of(
               conns, [](auto const& conn) { return conn.needs_update_; })) {
             auto awaitables = utl::to_vec(conns, [&](connection& conn) {
@@ -77,6 +78,7 @@ void get_upstream(boost::asio::io_context& ioc,
                           std::chrono::seconds{conn.cfg_.timeout_});
 
                       auto k = now().time_since_epoch().count();
+                      auto const lock = std::lock_guard<std::mutex>{m};
                       while (new_history.contains(k)) {
                         ++k;
                       }

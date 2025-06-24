@@ -78,9 +78,8 @@ boost::asio::awaitable<void> unsubscribe(boost::asio::io_context& ioc,
                     fmt::println("[unsubscribe] failed: {}",
                                  get_http_body(res));
                   } else {
-                    fmt::println("[unsubscribe] success: {} @ {}",
-                                 conn.cfg_.server_name_,
-                                 conn.subscription_addr_);
+                    fmt::println("[unsubscribe] success: {}",
+                                 conn.cfg_.server_name_);
                   }
                 } catch (std::exception const& e) {
                   fmt::println("[unsubscribe] exception: {}", e.what());
@@ -117,8 +116,8 @@ boost::asio::awaitable<void> subscribe(boost::asio::io_context& ioc,
                     fmt::println("[subscribe] failed: {}", get_http_body(res));
                   } else {
                     fmt::println("[subscribe] success: {} @ {}",
-                                 conn.cfg_.server_name_,
-                                 conn.subscription_addr_);
+                                 conn.get_subscription_id(),
+                                 conn.cfg_.server_name_);
                   }
                 } catch (std::exception const& e) {
                   conn.stop();

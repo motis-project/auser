@@ -29,12 +29,12 @@ net::reply fetch::operator()(net::route_request const& req, bool) const {
   auto n_rides = 0U;
   for (auto u = history->upper_bound(since); u != end(*history); ++u) {
     auto const& [t, d] = *u;
-    for (auto const n : d.select_nodes("//AUSNachricht/*")) {
+    for (auto const n : d.select_nodes("//IstFahrt")) {
       msg.append_copy(n.node());
       ++n_rides;
     }
   }
-  fmt::println("[fetch] {} --> {} (updates for {} rides)", since, now, n_rides);
+  fmt::println("[fetch] {} --> {} ({} rides)", since, now, n_rides);
 
   auto res = net::web_server::string_res_t{boost::beast::http::status::ok,
                                            req.version()};

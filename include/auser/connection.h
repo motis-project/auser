@@ -30,6 +30,7 @@ struct connection {
   std::atomic<time_t::rep> id_{0};
   std::atomic<time_t::rep> prev_id_{0};
   bool needs_update_{false};
+  size_t max_rides_per_msg_{0U};
 };
 
 }  // namespace auser

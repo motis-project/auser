@@ -31,7 +31,7 @@ net::reply client_status::operator()(net::route_request const& req,
   if (id > 0) {
     auto active_sub_node = active_subs_node.append_child("AboAUS");
     active_sub_node.append_attribute("AboID") =
-        std::to_string(conn_.id_).c_str();
+        conn_.get_subscription_id().data();
     active_sub_node.append_attribute("VerfallZst") =
         timestamp(time_t{time_t::duration{id}} +
                   std::chrono::seconds{conn_.cfg_.subscription_duration_})

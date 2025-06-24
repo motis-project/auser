@@ -43,4 +43,11 @@ std::string connection::make_get_upstream_req() const {
   return xml_to_str(doc);
 }
 
+std::string connection::get_subscription_id() const {
+  return std::to_string(
+      std::chrono::round<std::chrono::seconds>(time_t{time_t::duration{id_}})
+          .time_since_epoch()
+          .count());
+}
+
 }  // namespace auser

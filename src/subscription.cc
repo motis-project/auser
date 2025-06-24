@@ -41,7 +41,7 @@ std::string subscribe_body(config const& cfg, connection const& conn) {
   auto doc = make_xml_doc();
   auto sub_req_node = add_sub_req_node(doc, conn.cfg_.client_name_);
   auto sub_node = sub_req_node.append_child("AboAUS");
-  sub_node.append_attribute("AboID") = std::to_string(conn.id_).data();
+  sub_node.append_attribute("AboID") = conn.get_subscription_id().data();
   sub_node.append_attribute("VerfallZst") =
       timestamp(now() + std::chrono::seconds{cfg.subscription_duration_})
           .c_str();

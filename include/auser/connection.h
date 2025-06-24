@@ -19,6 +19,7 @@ struct connection {
   void start();
   void stop();
   std::string make_get_upstream_req() const;
+  std::string get_subscription_id() const;
 
   auser::config const& cfg_;
   std::string client_status_path_;

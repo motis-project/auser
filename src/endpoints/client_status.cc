@@ -7,8 +7,9 @@
 
 namespace auser {
 
-std::string client_status::operator()(std::string_view s) const {
-  fmt::println("received client_status_request: {}", s);
+net::reply client_status::operator()(net::route_request const& req,
+                                     bool) const {
+  fmt::println("[client_status] {}: {}", req.url_.data(), req.body().data());
 
   auto doc = make_xml_doc();
   auto client_status_res_node = doc.append_child("ClientStatusAntwort");
@@ -32,7 +33,10 @@ std::string client_status::operator()(std::string_view s) const {
             .c_str();
   }
 
-  return xml_to_str(doc);
+  auto res = net::web_server::string_res_t{boost::beast::http::status::ok,
+                                           req.version()};
+  res.body() = xml_to_str(doc);
+  return res;
 }
 
 }  // namespace auser

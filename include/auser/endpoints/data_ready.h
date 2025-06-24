@@ -1,12 +1,11 @@
 #pragma once
 
-#include <string>
-#include <string_view>
+#include "net/web_server/query_router.h"
 
 namespace auser {
 
 struct data_ready {
-  std::string operator()(std::string_view) const;
+  net::reply operator()(net::route_request const&, bool) const;
 };
 
 }  // namespace auser

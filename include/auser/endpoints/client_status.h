@@ -1,15 +1,13 @@
 #pragma once
 
-#include <string>
-
-#include "boost/url/url_view.hpp"
+#include "net/web_server/query_router.h"
 
 #include "auser/connection.h"
 
 namespace auser {
 
 struct client_status {
-  std::string operator()(std::string_view) const;
+  net::reply operator()(net::route_request const&, bool) const;
 
   connection const& conn_;
 };

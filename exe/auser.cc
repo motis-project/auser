@@ -22,6 +22,7 @@
 #include "auser/types.h"
 
 namespace bpo = boost::program_options;
+using namespace std::chrono_literals;
 
 int main(int argc, char* argv[]) {
   auto cfg = auser::config{};
@@ -55,13 +56,14 @@ int main(int argc, char* argv[]) {
   conns.emplace_back(cfg);
   for (auto const& conn : conns) {
     qr.route("POST", conn.client_status_path_, auser::client_status{conn});
+    fmt::println("[init] {}", conn.client_status_path_);
     qr.route("POST", conn.data_ready_path_, auser::data_ready{});
-    fmt::println("setup client status path: {}", conn.client_status_path_);
-    fmt::println("setup data ready path: {}", conn.data_ready_path_);
+    fmt::println("[init] {}", conn.data_ready_path_);
   }
 
   auto history = std::make_shared<auser::history_t>();
   qr.route("GET", "/auser/fetch", auser::fetch{history});
+  fmt::println("[init] {}", "/auser/fetch");
 
   qr.enable_cors();
   s.set_timeout(std::chrono::minutes{5});
@@ -76,8 +78,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  std::cout << "listening on " << cfg.client_ip_ << ":" << cfg.client_port_
-            << "\n";
+  fmt::println("[init] listening on {}:{}", cfg.client_ip_, cfg.client_port_);
 
   auto subscription_ioc = boost::asio::io_context{};
   auto subscription_thread = std::thread{[&]() {
@@ -86,11 +87,12 @@ int main(int argc, char* argv[]) {
     subscription_ioc.run();
   }};
 
-  auto fetch_ioc = boost::asio::io_context{};
-  auto fetch_thread = std::thread{[&]() {
-    utl::set_current_thread_name("VDV AUS fetch");
-    get_upstream(fetch_ioc, cfg, conns, history);
-    fetch_ioc.run();
+  auto get_upstream_ioc = boost::asio::io_context{};
+  auto get_upstream_thread = std::thread{[&]() {
+    utl::set_current_thread_name("VDV AUS get_upstream");
+    std::this_thread::sleep_for(5s);
+    get_upstream(get_upstream_ioc, cfg, conns, history);
+    get_upstream_ioc.run();
   }};
 
   auto threads = std::vector<std::thread>{cfg.n_threads_};
@@ -100,7 +102,7 @@ int main(int argc, char* argv[]) {
   }
 
   auto const stop = net::stop_handler(ioc, [&]() {
-    fmt::println("shutdown");
+    fmt::println("[shutdown]");
     r.ch_.close();
     s.stop();
     ioc.stop();

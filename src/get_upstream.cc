@@ -97,23 +97,14 @@ void get_upstream(boost::asio::io_context& ioc,
 
                       auto const n_rides = n_rides_in_msg(new_history.at(k));
                       n_rides_total += n_rides;
-                      conn.max_rides_per_msg_ =
-                          std::max(conn.max_rides_per_msg_, n_rides);
-                      auto const update_interval_exceeded =
-                          std::chrono::steady_clock::now() - start >
-                          std::chrono::seconds{cfg.update_interval_};
-                      auto const full_message =
-                          n_rides == conn.max_rides_per_msg_;
                       conn.needs_update_ =
-                          !update_interval_exceeded &&
-                          (but_wait_there_is_more(new_history.at(k)) ||
-                           full_message);
+                          but_wait_there_is_more(new_history.at(k));
 
                       fmt::println(
                           "[get_upstream] {} ({} rides), network_time: {} ms",
                           k, n_rides, network_time.count());
 
-                      new_history.at(k).save_file(std::to_string(k).c_str());
+                      // new_history.at(k).save_file(std::to_string(k).c_str());
                     } catch (std::exception const& e) {
                       fmt::println("[get_upstream] catch: {}", e.what());
                     }

@@ -6,10 +6,9 @@
 
 namespace auser {
 
-    pugi::xml_document make_xml_doc();
+pugi::xml_document make_xml_doc();
 
-    std::string xml_to_str(pugi::xml_document const &doc);
+std::string xml_to_str(pugi::xml_document const& doc);
 
-    pugi::xml_document parse(std::string const &);
-
+pugi::xml_document parse(std::string const&);
 }  // namespace auser

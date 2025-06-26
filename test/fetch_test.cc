@@ -492,7 +492,7 @@ void get_upstream_mock(std::shared_ptr<auser::history_t>& history,
     }
   }
 
-  copy.try_emplace(copy.size() + 1, auser::parse(update));
+  copy.try_emplace(static_cast<long>(copy.size()) + 1, auser::parse(update));
 
   history = std::make_shared<auser::history_t>(std::move(copy));
 }

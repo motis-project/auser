@@ -508,34 +508,33 @@ TEST(auser, fetch) {
 
   EXPECT_EQ(exp_empty,
             make_req_unpack_res("http://www.example.com/auser/fetch"));
+  EXPECT_EQ(exp_empty,
+            make_req_unpack_res("http://www.example.com/auser/fetch?since=0"));
+  EXPECT_EQ(exp_empty,
+            make_req_unpack_res("http://www.example.com/auser/fetch?since=-1"));
 
   get_upstream_mock(history, update_0);
 
   auto const res_0 =
-      make_req_unpack_res("http://www.example.com/api/v1/get_updates?since=0");
+      make_req_unpack_res("http://www.example.com/auser/fetch?since=0");
   EXPECT_EQ(exp_0, res_0);
-  EXPECT_EQ(res_0,
-            make_req_unpack_res("http://www.example.com/api/v1/get_updates"));
+  EXPECT_EQ(res_0, make_req_unpack_res("http://www.example.com/auser/fetch"));
 
   get_upstream_mock(history, update_1);
 
-  EXPECT_EQ(exp_1, make_req_unpack_res(
-                       "http://www.example.com/api/v1/get_updates?since=1"));
+  EXPECT_EQ(exp_1,
+            make_req_unpack_res("http://www.example.com/auser/fetch?since=1"));
 
   get_upstream_mock(history, update_2);
 
-  EXPECT_EQ(exp_2, make_req_unpack_res(
-                       "http://www.example.com/api/v1/get_updates?since=2"));
-  EXPECT_EQ(exp_all, make_req_unpack_res(
-                         "http://www.example.com/api/v1/get_updates?since=0"));
-  EXPECT_EQ(
-      exp_greater_or_equal,
-      make_req_unpack_res("http://www.example.com/api/v1/get_updates?since=3"));
+  EXPECT_EQ(exp_2,
+            make_req_unpack_res("http://www.example.com/auser/fetch?since=2"));
+  EXPECT_EQ(exp_all,
+            make_req_unpack_res("http://www.example.com/auser/fetch?since=0"));
+  EXPECT_EQ(exp_all,
+            make_req_unpack_res("http://www.example.com/auser/fetch?since=-1"));
   EXPECT_EQ(exp_greater_or_equal,
-            make_req_unpack_res(
-                "http://www.example.com/api/v1/get_updates?since=42"));
-}
-
-TEST(auser, url) {
-  boost::urls::url{"http://212.111.241.215:80/motis/aus/aboverwalten.xml"};
+            make_req_unpack_res("http://www.example.com/auser/fetch?since=3"));
+  EXPECT_EQ(exp_greater_or_equal,
+            make_req_unpack_res("http://www.example.com/auser/fetch?since=42"));
 }

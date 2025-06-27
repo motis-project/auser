@@ -17,9 +17,9 @@
 #include "auser/endpoints/data_ready.h"
 #include "auser/endpoints/fetch.h"
 #include "auser/get_upstream.h"
+#include "auser/history.h"
 #include "auser/scheduler/runner.h"
 #include "auser/subscription.h"
-#include "auser/types.h"
 
 namespace bpo = boost::program_options;
 using namespace std::chrono_literals;
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     fmt::println("[init] {}", conn.data_ready_path_);
   }
 
-  auto history = std::make_shared<auser::history_t>();
+  auto history = std::make_shared<auser::history>();
   qr.route("GET", "/auser/fetch", auser::fetch{history});
   fmt::println("[init] {}", "/auser/fetch");
 

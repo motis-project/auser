@@ -12,23 +12,23 @@
 
 #include "fmt/printf.h"
 
+#include "auser/history.h"
 #include "auser/http.h"
-#include "auser/xml.h"
 
 namespace auser {
 
-history_t cleaned_up(history_t const& h, time_t::rep const discard_before) {
+history cleaned_up(history const& h, time_t::rep const discard_before) {
+  auto copy = history{};
 
-  auto copy = history_t{};
-  for (auto const& [k, v] : h) {
-    if (k < discard_before) {
-      continue;
+  for (auto const& kv : h.index_) {
+    if (kv.first >= discard_before) {
+      copy.index_.emplace_back(kv);
     }
-
-    copy[k] = make_xml_doc();
-    for (auto const& c : v) {
-      copy[k].append_copy(c);
-    }
+  }
+  if (!copy.index_.empty()) {
+    copy.data_ += std::string_view{
+        begin(h.data_) + static_cast<long>(copy.index_.front().second),
+        end(h.data_)};
   }
 
   return copy;
@@ -46,10 +46,10 @@ size_t n_rides_in_msg(pugi::xml_document const& doc) {
 void get_upstream(boost::asio::io_context& ioc,
                   config const& cfg,
                   std::vector<connection>& conns,
-                  std::shared_ptr<history_t>& history) {
+                  std::shared_ptr<history>& h) {
   boost::asio::co_spawn(
       ioc,
-      [&cfg, &conns, &history]() -> boost::asio::awaitable<void> {
+      [&cfg, &conns, &h]() -> boost::asio::awaitable<void> {
         auto executor = co_await boost::asio::this_coro::executor;
         auto timer = boost::asio::steady_timer{executor};
         auto ec = boost::system::error_code{};
@@ -63,11 +63,8 @@ void get_upstream(boost::asio::io_context& ioc,
             conn.needs_update_ = true;
           }
 
-          auto new_history = cleaned_up(*history, discard_before);
-          auto const prev_last_key =
-              new_history.empty() ? 0L : rbegin(new_history)->first;
+          auto h_new = cleaned_up(*h, discard_before);
           auto m = std::mutex{};
-          auto n_rides_total = size_t{0U};
           while (utl::any_of(
               conns, [](auto const& conn) { return conn.needs_update_; })) {
             auto awaitables = utl::to_vec(conns, [&](connection& conn) {
@@ -78,31 +75,16 @@ void get_upstream(boost::asio::io_context& ioc,
                     }
 
                     try {
-                      auto const network_start =
-                          std::chrono::steady_clock::now();
                       auto const res = co_await http_POST(
                           boost::urls::url{conn.get_upstream_data_addr_},
                           kHeaders, conn.make_get_upstream_req(),
                           std::chrono::seconds{conn.cfg_.timeout_});
-                      auto const network_time =
-                          std::chrono::duration_cast<std::chrono::milliseconds>(
-                              std::chrono::steady_clock::now() - network_start);
 
-                      auto k = now().time_since_epoch().count();
+                      auto const body = get_http_body(res);
+                      conn.needs_update_ = but_wait_there_is_more(parse(body));
+
                       auto const lock = std::lock_guard<std::mutex>{m};
-                      while (new_history.contains(k)) {
-                        ++k;
-                      }
-                      new_history.try_emplace(k, parse(get_http_body(res)));
-
-                      auto const n_rides = n_rides_in_msg(new_history.at(k));
-                      n_rides_total += n_rides;
-                      conn.needs_update_ =
-                          but_wait_there_is_more(new_history.at(k));
-
-                      fmt::println(
-                          "[get_upstream] {} ({} rides), network_time: {} ms",
-                          k, n_rides, network_time.count());
+                      h_new.add(body);
 
                       // new_history.at(k).save_file(std::to_string(k).c_str());
                     } catch (std::exception const& e) {
@@ -118,11 +100,7 @@ void get_upstream(boost::asio::io_context& ioc,
                                 boost::asio::use_awaitable);
           }
 
-          history = std::make_shared<history_t>(std::move(new_history));
-
-          fmt::println("[get_upstream] {} --> {} ({} rides)", prev_last_key,
-                       history->empty() ? 0 : rbegin(*history)->first,
-                       n_rides_total);
+          h = std::make_shared<history>(std::move(h_new));
 
           timer.expires_at(start + std::chrono::seconds{cfg.update_interval_});
           co_await timer.async_wait(

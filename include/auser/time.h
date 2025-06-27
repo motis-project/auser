@@ -2,9 +2,10 @@
 
 #include <chrono>
 
-#include "auser/types.h"
-
 namespace auser {
+
+using time_t = std::chrono::time_point<std::chrono::system_clock,
+                                       std::chrono::nanoseconds>;
 
 time_t now();
 

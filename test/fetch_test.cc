@@ -482,10 +482,10 @@ constexpr auto const exp_greater_or_equal =
 <AUSNachricht auser_id="3" />
 )";
 
-void get_upstream_mock(std::shared_ptr<auser::history_t>& history,
+void get_upstream_mock(std::shared_ptr<auser::history>& h,
                        std::string const& update) {
-  auto copy = auser::history_t{};
-  for (auto const& [k, v] : *history) {
+  auto copy = auser::history{};
+  for (auto const& [k, v] : h->) {
     copy[k] = auser::make_xml_doc();
     for (auto const& c : v) {
       copy[k].append_copy(c);
@@ -494,7 +494,7 @@ void get_upstream_mock(std::shared_ptr<auser::history_t>& history,
 
   copy.try_emplace(static_cast<long>(copy.size()) + 1, auser::parse(update));
 
-  history = std::make_shared<auser::history_t>(std::move(copy));
+  h = std::make_shared<auser::history_t>(std::move(copy));
 }
 
 TEST(auser, fetch) {

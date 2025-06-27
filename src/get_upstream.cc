@@ -17,23 +17,6 @@
 
 namespace auser {
 
-history cleaned_up(history const& h, time_t::rep const discard_before) {
-  auto copy = history{};
-
-  for (auto const& kv : h.index_) {
-    if (kv.first >= discard_before) {
-      copy.index_.emplace_back(kv);
-    }
-  }
-  if (!copy.index_.empty()) {
-    copy.data_ += std::string_view{
-        begin(h.data_) + static_cast<long>(copy.index_.front().second),
-        end(h.data_)};
-  }
-
-  return copy;
-}
-
 bool but_wait_there_is_more(pugi::xml_document const& doc) {
   auto const found_more = doc.select_node("//WeitereDaten");
   return found_more && found_more.node().text().as_bool();
@@ -63,7 +46,7 @@ void get_upstream(boost::asio::io_context& ioc,
             conn.needs_update_ = true;
           }
 
-          auto h_new = cleaned_up(*h, discard_before);
+          auto h_new = copy_suffix(*h, discard_before);
           auto m = std::mutex{};
           while (utl::any_of(
               conns, [](auto const& conn) { return conn.needs_update_; })) {

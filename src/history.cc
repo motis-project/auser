@@ -19,7 +19,7 @@ bool history::contains(time_t::rep const k) const {
   return false;
 }
 
-void history::add(std::string_view s) {
+void history::add(std::string_view s, time_t::rep k) {
   static constexpr auto const kStart = "<IstFahrt"sv;
   static constexpr auto const kEnd = "IstFahrt>"sv;
 
@@ -32,14 +32,17 @@ void history::add(std::string_view s) {
     return;
   }
 
-  auto k = now().time_since_epoch().count();
   while (contains(k)) {
     ++k;
   }
   index_.emplace_back(k, data_.size());
 
-  data_ += s.substr(start, end + kEnd.size());
+  data_ += s.substr(start, end + kEnd.size() - start);
   data_ += '\n';
+}
+
+void history::add(std::string_view s) {
+  add(s, now().time_since_epoch().count());
 }
 
 std::string history::since(time_t::rep const k, std::uint32_t const max) const {
@@ -69,6 +72,29 @@ std::string history::since(time_t::rep const k, std::uint32_t const max) const {
   }
 
   return std::to_string(k);
+}
+
+history copy_suffix(history const& h, time_t::rep const discard_before) {
+  auto copy = history{};
+
+  for (auto const& kv : h.index_) {
+    if (kv.first >= discard_before) {
+      copy.index_.emplace_back(kv);
+    }
+  }
+
+  if (!copy.index_.empty()) {
+    copy.data_ += std::string_view{
+        begin(h.data_) + static_cast<long>(copy.index_.front().second),
+        end(h.data_)};
+  }
+
+  auto const shift = h.data_.size() - copy.data_.size();
+  for (auto& kv : copy.index_) {
+    kv.second -= shift;
+  }
+
+  return copy;
 }
 
 }  // namespace auser

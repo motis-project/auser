@@ -17,7 +17,6 @@ struct connection {
   connection(connection&&) noexcept;
 
   void start();
-  void stop();
   std::string make_get_upstream_req() const;
   std::string get_subscription_id() const;
 

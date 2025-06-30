@@ -31,8 +31,6 @@ void connection::start() {
   prev_id_ = id_.exchange(now().time_since_epoch().count());
 }
 
-void connection::stop() { id_ = 0; }
-
 std::string connection::make_get_upstream_req() const {
   auto doc = make_xml_doc();
   auto fetch_data_node = doc.append_child("DatenAbrufenAnfrage");

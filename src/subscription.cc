@@ -68,7 +68,6 @@ boost::asio::awaitable<void> unsubscribe(boost::asio::io_context& ioc,
           return boost::asio::co_spawn(
               executor,
               [&cfg, &conn]() -> boost::asio::awaitable<void> {
-                conn.stop();
                 try {
                   auto const res = co_await http_POST(
                       boost::urls::url{conn.subscription_addr_}, kHeaders,
@@ -105,22 +104,20 @@ boost::asio::awaitable<void> subscribe(boost::asio::io_context& ioc,
           return boost::asio::co_spawn(
               executor,
               [&cfg, &conn]() -> boost::asio::awaitable<void> {
-                conn.start();
                 try {
                   auto const res = co_await http_POST(
                       boost::urls::url{conn.subscription_addr_}, kHeaders,
                       subscribe_body(cfg, conn),
                       std::chrono::seconds{cfg.timeout_});
                   if (res.result_int() != 200U) {
-                    conn.stop();
                     fmt::println("[subscribe] failed: {}", get_http_body(res));
                   } else {
+                    conn.start();
                     fmt::println("[subscribe] success: {} @ {}",
                                  conn.get_subscription_id(),
                                  conn.cfg_.server_name_);
                   }
                 } catch (std::exception const& e) {
-                  conn.stop();
                   fmt::println("[subscribe] exception: {}", e.what());
                 }
               },

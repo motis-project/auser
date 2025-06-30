@@ -18,7 +18,7 @@ As a downstream data consumer, send GET Request to the `auser` instance
 X.X.X.X:80/auser/fetch?since=23
 ```
 
-to fetch all updates that arrived since update with ID = 23. Use `since=0` for initial fetch.
+to fetch all updates that arrived since the update with the `auser_id = 23`. Use `since=0` for initial fetch.
 
 Response:
 

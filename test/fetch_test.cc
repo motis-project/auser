@@ -172,8 +172,16 @@ constexpr auto const update_2 = R"(
 </DatenAbrufenAntwort>
 )";
 
+constexpr auto const exp_empty =
+    R"(<?xml version="1.0" encoding="iso-8859-1"?>
+<AUSNachricht auser_id="0">
+</AUSNachricht>
+)";
+
 constexpr auto const exp_0 =
-    R"(<IstFahrt Zst="2024-07-10T00:00:00">
+    R"(<?xml version="1.0" encoding="iso-8859-1"?>
+<AUSNachricht auser_id="1">
+<IstFahrt Zst="2024-07-10T00:00:00">
       <LinienID>AE</LinienID>
       <RichtungsID>1</RichtungsID>
       <FahrtRef>
@@ -229,10 +237,13 @@ constexpr auto const exp_0 =
       <Zusatzfahrt>false</Zusatzfahrt>
       <FaelltAus>false</FaelltAus>
     </IstFahrt>
-1)";
+</AUSNachricht>
+)";
 
 constexpr auto const exp_1 =
-    R"(<IstFahrt Zst="2024-07-10T00:00:00">
+    R"(<?xml version="1.0" encoding="iso-8859-1"?>
+<AUSNachricht auser_id="2">
+<IstFahrt Zst="2024-07-10T00:00:00">
       <LinienID>AE</LinienID>
       <RichtungsID>1</RichtungsID>
       <FahrtRef>
@@ -258,10 +269,13 @@ constexpr auto const exp_1 =
       <Zusatzfahrt>false</Zusatzfahrt>
       <FaelltAus>false</FaelltAus>
     </IstFahrt>
-2)";
+</AUSNachricht>
+)";
 
 constexpr auto const exp_2 =
-    R"(<IstFahrt Zst="2024-07-10T00:00:00">
+    R"(<?xml version="1.0" encoding="iso-8859-1"?>
+<AUSNachricht auser_id="3">
+<IstFahrt Zst="2024-07-10T00:00:00">
       <LinienID>AE</LinienID>
       <RichtungsID>1</RichtungsID>
       <FahrtRef>
@@ -317,10 +331,13 @@ constexpr auto const exp_2 =
       <Zusatzfahrt>false</Zusatzfahrt>
       <FaelltAus>false</FaelltAus>
     </IstFahrt>
-3)";
+</AUSNachricht>
+)";
 
 constexpr auto const exp_all =
-    R"(<IstFahrt Zst="2024-07-10T00:00:00">
+    R"(<?xml version="1.0" encoding="iso-8859-1"?>
+<AUSNachricht auser_id="3">
+<IstFahrt Zst="2024-07-10T00:00:00">
       <LinienID>AE</LinienID>
       <RichtungsID>1</RichtungsID>
       <FahrtRef>
@@ -458,7 +475,14 @@ constexpr auto const exp_all =
       <Zusatzfahrt>false</Zusatzfahrt>
       <FaelltAus>false</FaelltAus>
     </IstFahrt>
-3)";
+</AUSNachricht>
+)";
+
+constexpr auto const exp_greater_or_equal =
+    R"(<?xml version="1.0" encoding="iso-8859-1"?>
+<AUSNachricht auser_id="3">
+</AUSNachricht>
+)";
 
 void get_upstream_mock(std::shared_ptr<auser::history>& h,
                        std::string const& update) {
@@ -478,10 +502,11 @@ TEST(auser, fetch) {
     return std::get<net::web_server::string_res_t>(af(req, true)).body();
   };
 
-  EXPECT_EQ("0", make_req_unpack_res("http://www.example.com/auser/fetch"));
-  EXPECT_EQ("0",
+  EXPECT_EQ(exp_empty,
+            make_req_unpack_res("http://www.example.com/auser/fetch"));
+  EXPECT_EQ(exp_empty,
             make_req_unpack_res("http://www.example.com/auser/fetch?since=0"));
-  EXPECT_EQ("-1",
+  EXPECT_EQ(exp_empty,
             make_req_unpack_res("http://www.example.com/auser/fetch?since=-1"));
 
   get_upstream_mock(h, update_0);
@@ -504,8 +529,8 @@ TEST(auser, fetch) {
             make_req_unpack_res("http://www.example.com/auser/fetch?since=0"));
   EXPECT_EQ(exp_all,
             make_req_unpack_res("http://www.example.com/auser/fetch?since=-1"));
-  EXPECT_EQ("3",
+  EXPECT_EQ(exp_greater_or_equal,
             make_req_unpack_res("http://www.example.com/auser/fetch?since=3"));
-  EXPECT_EQ("42",
+  EXPECT_EQ(exp_greater_or_equal,
             make_req_unpack_res("http://www.example.com/auser/fetch?since=42"));
 }

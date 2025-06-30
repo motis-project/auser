@@ -12,7 +12,7 @@ namespace auser {
 struct fetch {
   net::reply operator()(net::route_request const&, bool) const;
 
-  std::shared_ptr<history> const& history_;
+  std::shared_ptr<history> const& h_;
 };
 
 }  // namespace auser

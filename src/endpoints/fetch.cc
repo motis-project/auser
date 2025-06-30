@@ -6,10 +6,23 @@
 
 namespace auser {
 
+using namespace std::literals;
+
 constexpr auto const kDefaultBodyLimit = 8U * 1024U * 1024U;
+constexpr auto const kMaxBodyLimit = 128U * 1024U * 1024U;
+
+constexpr auto const wrapper_front =
+    R"(<?xml version="1.0" encoding="iso-8859-1"?>
+<AUSNachricht auser_id=")"sv;
+
+constexpr auto const wrapper_mid = R"(">
+)"sv;
+
+constexpr auto const wrapper_back = R"(</AUSNachricht>
+)"sv;
 
 net::reply fetch::operator()(net::route_request const& req, bool) const {
-  auto const history = history_;
+  auto const h = h_;
 
   auto since = time_t::rep{0};
   auto body_limit = kDefaultBodyLimit;
@@ -28,10 +41,18 @@ net::reply fetch::operator()(net::route_request const& req, bool) const {
                    p.value, e.what());
     }
   }
+  since = std::min(std::max(since, time_t::rep{0}),
+                   h->index_.empty() ? time_t::rep{0} : h->index_.back().first);
+  body_limit = std::min(body_limit, kMaxBodyLimit);
+
+  auto const [vdvaus, auser_id] =
+      h->since(since, (body_limit - (wrapper_front.size() + wrapper_mid.size() +
+                                     wrapper_back.size())));
 
   auto res = net::web_server::string_res_t{boost::beast::http::status::ok,
                                            req.version()};
-  res.body() = history->since(since, body_limit);
+  res.body() = fmt::format("{}{}{}{}{}", wrapper_front, auser_id, wrapper_mid,
+                           vdvaus, wrapper_back);
   return res;
 }
 

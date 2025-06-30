@@ -2,8 +2,6 @@
 
 #include "fmt/printf.h"
 
-#include "auser/xml.h"
-
 namespace auser {
 
 using namespace std::literals;
@@ -45,14 +43,17 @@ net::reply fetch::operator()(net::route_request const& req, bool) const {
                    h->index_.empty() ? time_t::rep{0} : h->index_.back().first);
   body_limit = std::min(body_limit, kMaxBodyLimit);
 
-  auto const [vdvaus, auser_id] =
+  auto const [rides, auser_id] =
       h->since(since, (body_limit - (wrapper_front.size() + wrapper_mid.size() +
                                      wrapper_back.size())));
 
   auto res = net::web_server::string_res_t{boost::beast::http::status::ok,
                                            req.version()};
   res.body() = fmt::format("{}{}{}{}{}", wrapper_front, auser_id, wrapper_mid,
-                           vdvaus, wrapper_back);
+                           rides, wrapper_back);
+
+  fmt::println("[fetch] {} --> {} ({:.2f} MB)", since, auser_id,
+               static_cast<double>(res.body().size()) / (1024.0 * 1024.0));
   return res;
 }
 

@@ -64,8 +64,6 @@ void get_upstream(boost::asio::io_context& ioc,
 
                       auto const lock = std::lock_guard<std::mutex>{m};
                       h_new.add(body);
-
-                      // new_history.at(k).save_file(std::to_string(k).c_str());
                     } catch (std::exception const& e) {
                       fmt::println("[get_upstream] catch: {}", e.what());
                     }
@@ -79,6 +77,11 @@ void get_upstream(boost::asio::io_context& ioc,
                                 boost::asio::use_awaitable);
           }
 
+          fmt::println(
+              "[get_upstream] {} --> {} (total: {:.2f} MB)",
+              h->index_.empty() ? 0 : h->index_.back().first,
+              h_new.index_.empty() ? 0 : h_new.index_.back().first,
+              static_cast<double>(h_new.data_.size()) / (1024.0 * 1024.0));
           h = std::make_shared<history>(std::move(h_new));
 
           timer.expires_at(start + std::chrono::seconds{cfg.update_interval_});

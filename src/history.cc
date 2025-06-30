@@ -48,9 +48,9 @@ void history::add(std::string_view s, time_t::rep k) {
   data_ += update;
   data_ += '\n';
 
-  fmt::println("[history][add] {} + {:.2f} MB --> {} ({:.2f} MB)",
+  fmt::println("[history][add] {} --> {} (+{:.2f} MB, {:.2f} MB)",
                index_.size() > 1 ? std::next(rbegin(index_))->first : 0,
-               byte_to_mb(update.size()), index_.back().first,
+               index_.back().first, byte_to_mb(update.size()),
                byte_to_mb(data_.size()));
 }
 
@@ -108,9 +108,11 @@ history copy_suffix(history const& h, time_t::rep const discard_before) {
     kv.second -= shift;
   }
 
-  fmt::println("[history][copy_suffix] discarding before {} (- {:.2f} MB)",
-               discard_before,
-               byte_to_mb(h.data_.size()) - byte_to_mb(copy.data_.size()));
+  fmt::println(
+      "[history][copy_suffix] discarding before {} (-{:.2f} MB, {:.2f} MB)",
+      discard_before,
+      byte_to_mb(h.data_.size()) - byte_to_mb(copy.data_.size()),
+      byte_to_mb(h.data_.size()));
   return copy;
 }
 

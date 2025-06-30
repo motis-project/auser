@@ -12,13 +12,13 @@ Specify client attributes and which VDV AUS server to subscribe to.
 
 ## Fetch updates
 
-As a downstream data consumer, send GET Request to the `auser` instance
+As a downstream data consumer, send a GET Request to the `auser` instance
 
 ```
 X.X.X.X:80/auser/fetch?since=23
 ```
 
-to fetch all updates that arrived since the update with the `auser_id = 23`. Use `since=0` for initial fetch.
+to fetch all updates that arrived since the update with the `auser_id = 23`. Use `since=0` for the initial fetch.
 
 Response:
 

@@ -1,5 +1,7 @@
 #include "auser/history.h"
 
+#include "fmt/printf.h"
+
 using namespace std::string_view_literals;
 
 namespace auser {
@@ -17,6 +19,10 @@ bool history::contains(time_t::rep const k) const {
     }
   }
   return false;
+}
+
+double byte_to_mb(auto const x) {
+  return static_cast<double>(x) / (1024.0 * 1024.0);
 }
 
 void history::add(std::string_view s, time_t::rep k) {
@@ -37,8 +43,15 @@ void history::add(std::string_view s, time_t::rep k) {
   }
   index_.emplace_back(k, data_.size());
 
-  data_ += s.substr(start, end + kEnd.size() - start);
+  auto const update = s.substr(start, end + kEnd.size() - start);
+
+  data_ += update;
   data_ += '\n';
+
+  fmt::println("[history][add] {} + {:.2f} MB --> {} ({:.2f} MB)",
+               index_.size() > 1 ? std::next(rbegin(index_))->first : 0,
+               byte_to_mb(update.size()), index_.back().first,
+               byte_to_mb(data_.size()));
 }
 
 void history::add(std::string_view s) {
@@ -63,11 +76,12 @@ std::string history::since(time_t::rep const k, std::uint32_t const max) const {
   for (auto r = index_.size(); r-- > 0;) {
     auto const until = data_end(r);
     if (until - from <= (max - kMaxIdLength)) {
-      return std::format(
-          "{}{}",
+      auto const vdvaus_emitted =
           std::string_view{begin(data_) + static_cast<long>(from),
-                           begin(data_) + static_cast<long>(until)},
-          index_[r].first);
+                           begin(data_) + static_cast<long>(until)};
+      fmt::println("[history][since] {} --> {} ({:.2f} MB)", k, index_[r].first,
+                   byte_to_mb(vdvaus_emitted.size()));
+      return std::format("{}{}", vdvaus_emitted, index_[r].first);
     }
   }
 
@@ -94,6 +108,9 @@ history copy_suffix(history const& h, time_t::rep const discard_before) {
     kv.second -= shift;
   }
 
+  fmt::println("[history][copy_suffix] discarding before {} (- {:.2f} MB)",
+               discard_before,
+               byte_to_mb(h.data_.size()) - byte_to_mb(copy.data_.size()));
   return copy;
 }
 

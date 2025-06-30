@@ -22,10 +22,6 @@ bool but_wait_there_is_more(pugi::xml_document const& doc) {
   return found_more && found_more.node().text().as_bool();
 }
 
-size_t n_rides_in_msg(pugi::xml_document const& doc) {
-  return doc.select_nodes("//IstFahrt").size();
-}
-
 void get_upstream(boost::asio::io_context& ioc,
                   config const& cfg,
                   std::vector<connection>& conns,

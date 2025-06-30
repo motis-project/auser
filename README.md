@@ -35,5 +35,5 @@ Response:
 The response contains an attribute `auser_id` in the `AUSNachricht` XML node. This integer encodes the state of the data
 consumer after processing the update. The `auser_id` should be used as the value for `since` in the next fetch.
 
-Depending on the fetch frequency updates can get very large. The `body_limit` parameter can be used to define a maximum
+Depending on the fetch frequency, updates can get very large. The `body_limit` parameter can be used to define a maximum
 size in Bytes for the response body. The default value is 8 MB.

@@ -1,5 +1,6 @@
 #include "auser/get_upstream.h"
-#include <fstream>
+
+#include <iostream>
 
 #include "boost/asio/co_spawn.hpp"
 #include "boost/asio/detached.hpp"
@@ -83,6 +84,7 @@ void get_upstream(boost::asio::io_context& ioc,
               h_new.index_.empty() ? 0 : h_new.index_.back().first,
               static_cast<double>(h_new.data_.size()) / (1024.0 * 1024.0));
           h = std::make_shared<history>(std::move(h_new));
+          std::cout.flush();
 
           timer.expires_at(start + std::chrono::seconds{cfg.update_interval_});
           co_await timer.async_wait(

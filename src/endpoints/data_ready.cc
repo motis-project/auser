@@ -7,7 +7,7 @@
 namespace auser {
 
 net::reply data_ready::operator()(net::route_request const& req, bool) const {
-  fmt::println("[data_ready] {}: {}", req.url_.data(), req.body().data());
+  fmt::println("[data_ready] {}", req.url_.data());
 
   auto doc = make_xml_doc();
   auto data_ready_node = doc.append_child("DatenBereitAntwort");
@@ -19,6 +19,7 @@ net::reply data_ready::operator()(net::route_request const& req, bool) const {
   auto res = net::web_server::string_res_t{boost::beast::http::status::ok,
                                            req.version()};
   res.body() = xml_to_str(doc);
+  std::cout.flush();
   return res;
 }
 

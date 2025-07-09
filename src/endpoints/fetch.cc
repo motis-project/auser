@@ -54,6 +54,7 @@ net::reply fetch::operator()(net::route_request const& req, bool) const {
 
   fmt::println("[fetch] {} --> {} ({:.2f} MB)", since, auser_id,
                static_cast<double>(res.body().size()) / (1024.0 * 1024.0));
+  std::cout.flush();
   return res;
 }
 

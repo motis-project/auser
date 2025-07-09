@@ -144,6 +144,7 @@ void subscription(boost::asio::io_context& ioc,
 
           co_await unsubscribe(ioc, cfg, conns);
           co_await subscribe(ioc, cfg, conns);
+          std::cout.flush();
 
           timer.expires_at(start +
                            std::chrono::seconds{cfg.subscription_duration_});
@@ -164,6 +165,7 @@ void shutdown(boost::asio::io_context& ioc,
       ioc,
       [&cfg, &conns, &ioc]() -> boost::asio::awaitable<void> {
         co_await unsubscribe(ioc, cfg, conns);
+        std::cout.flush();
       },
       boost::asio::detached);
 }

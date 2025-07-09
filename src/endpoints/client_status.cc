@@ -2,14 +2,13 @@
 
 #include "fmt/printf.h"
 
-#include "auser/connection.h"
 #include "auser/xml.h"
 
 namespace auser {
 
 net::reply client_status::operator()(net::route_request const& req,
                                      bool) const {
-  fmt::println("[client_status] {}: {}", req.url_.data(), req.body().data());
+  fmt::println("[client_status] {}", req.url_.data());
 
   auto doc = make_xml_doc();
   auto client_status_res_node = doc.append_child("ClientStatusAntwort");
@@ -41,6 +40,7 @@ net::reply client_status::operator()(net::route_request const& req,
   auto res = net::web_server::string_res_t{boost::beast::http::status::ok,
                                            req.version()};
   res.body() = xml_to_str(doc);
+  std::cout.flush();
   return res;
 }
 
